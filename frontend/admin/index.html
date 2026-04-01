@@ -413,7 +413,7 @@
             }
             tbody.innerHTML = allProducts.map(p => `
                 <tr>
-                    <td><div class="table-img"><img src="/${p.image_path}" onerror="this.src='https://placehold.co/60x60?text=🧶'" alt="${p.name}"></div></td>
+                    <td><div class="table-img"><img src="${API}/${p.image_path}" onerror="this.src='https://placehold.co/60x60?text=🧶'" alt="${p.name}"></div></td>
                     <td><strong>${p.name}</strong></td>
                     <td class="price-cell">₹${p.price}</td>
                     <td><span class="category-badge">${p.category_display_name || '—'}</span></td>
