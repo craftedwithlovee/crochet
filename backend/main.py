@@ -12,6 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+import cloudinary
+import cloudinary.uploader
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -26,6 +28,17 @@ from .limiter import limiter
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 from .seed import seed
+
+# Cloudinary Config
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
+if CLOUDINARY_URL:
+    try:
+        # Configuration is automatically picked up from CLOUDINARY_URL environment variable
+        # but we need to ensure the library is initialized.
+        cloudinary.config(secure=True)
+        print("✅ Cloudinary initialized successfully.")
+    except Exception as e:
+        print(f"⚠️ Cloudinary initialization failed: {e}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -121,11 +134,29 @@ async def upload_image(
         counter += 1
 
     contents = await file.read()
+    
+    # Attempt Cloudinary Upload if configured
+    if CLOUDINARY_URL:
+        try:
+            upload_result = cloudinary.uploader.upload(
+                contents, 
+                folder="craftedwithlove/products",
+                public_id=file.filename.split('.')[0]
+            )
+            return {
+                "path": upload_result["secure_url"], 
+                "filename": file.filename,
+                "provider": "cloudinary"
+            }
+        except Exception as e:
+            print(f"⚠️ Cloudinary upload failed, falling back to local: {e}")
+
+    # Local Fallback
     with open(file_path, "wb") as f:
         f.write(contents)
 
     relative_path = f"uploads/{file_path.name}"
-    return {"path": relative_path, "filename": file_path.name}
+    return {"path": relative_path, "filename": file_path.name, "provider": "local"}
 
 
 # ── Static Files ─────────────────────────────────────────────────────────────

@@ -7,3 +7,4 @@ passlib[bcrypt]==1.7.4
 python-multipart==0.0.12
 aiofiles==24.1.0
 slowapi==0.1.9
+cloudinary==1.41.0
