@@ -25,10 +25,19 @@ from .limiter import limiter
 # Resolve project root (one level up from backend/)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+from .seed import seed
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create tables on startup
     Base.metadata.create_all(bind=engine)
+    
+    # Auto-seed the database if it's completely empty
+    try:
+        seed()
+    except Exception as e:
+        print(f"Auto-seeding skipped or failed: {e}")
+
     # Create uploads directory
     uploads_dir = PROJECT_ROOT / "uploads"
     uploads_dir.mkdir(exist_ok=True)
