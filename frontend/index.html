@@ -136,7 +136,7 @@
         const SITE_URL = "https://craftedwithlovee.github.io/Crochets";
         const WHATSAPP_NUMBER = "918619703099";
         const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-        const API_BASE = IS_LOCAL ? window.location.origin : "https://crochet-store-4dh6.onrender.com";
+        const API_BASE = IS_LOCAL ? window.location.origin : "YOUR_NEW_RENDER_URL";
         let cart = JSON.parse(localStorage.getItem('crochetCart')) || [];
 
         function toggleCart() { const c = document.getElementById('cart-sidebar'); c.classList.toggle('open'); if(c.classList.contains('open')) history.pushState({ modal: 'cart' }, ''); }
@@ -281,7 +281,7 @@
             const itemsTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
             const shippingFee = (itemsTotal < 500 && itemsTotal > 0) ? 50 : 0;
             let msg = `I would like to order from craftedwithlove\n\n👤 *Name:* ${name}\n\n*Items:*\n`;
-            const PROD_URL = "https://crochet-store-4dh6.onrender.com";
+            const PROD_URL = "YOUR_NEW_RENDER_URL";
             cart.forEach(it => { 
                 const imageUrl = `${PROD_URL}/${it.img}`;
                 msg += `• ${it.qty}x *${it.name}* (₹${it.price * it.qty})\n  Note: ${it.note}\n  📸 Link: ${imageUrl}\n\n`; 
