@@ -22,7 +22,8 @@ security = HTTPBearer()
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    # Fix for passlib bug in newer Python: truncate to 72 chars (bcrypt limit)
+    return pwd_context.hash(password[:72])
 
 
 def verify_password(plain: str, hashed: str) -> bool:
