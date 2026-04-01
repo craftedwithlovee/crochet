@@ -40,7 +40,8 @@
     </div>
 
     <script>
-        const API = "https://crochet-store-4dh6.onrender.com";
+        const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const API = IS_LOCAL ? window.location.origin : "https://crochet-store-4dh6.onrender.com";
 
         // Redirect if already logged in
         if (localStorage.getItem('adminToken')) {
