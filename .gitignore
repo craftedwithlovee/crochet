@@ -1,0 +1,27 @@
+# Python Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Environments
+env/
+venv/
+.env
+.venv
+
+# VS Code
+.vscode/
+
+# Large Files & Installers
+*.exe
+pg_installer.exe
+*.bak
+
+# SQLite databases (if accidentally created)
+*.sqlite
+*.db
+
+# OS generated files
+.DS_Store
+Thumbs.db

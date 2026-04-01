@@ -31,14 +31,29 @@
         .nav-btn::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 3px; background-color: #db2777; border-radius: 2px; transition: width 0.3s; }
         .nav-btn.active::after { width: 100%; }
         .qty-bar { display: flex; align-items: center; background: #fff; border: 1px solid #fce7f3; border-radius: 99px; padding: 2px; width: fit-content; margin-top: 8px; }
-        .qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: #fdf2f8; color: #db2777; border-radius: 50%; cursor: pointer; border: none; transition: 0.2s; }
-        .qty-btn:active { transform: scale(0.9); }
-        .qty-val { padding: 0 10px; font-size: 11px; font-weight: 800; color: #db2777; }
+        .qty-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: #fdf2f8; color: #db2777; border-radius: 50%; cursor: pointer; border: none; transition: 0.2s; font-size: 14px; font-weight: 800; }
+        .qty-btn:hover { background: #fce7f3; }
+        .qty-btn:active { transform: scale(0.85); }
+        .qty-val { padding: 0 12px; font-size: 12px; font-weight: 800; color: #db2777; min-width: 20px; text-align: center; }
         #toast { visibility: hidden; min-width: 250px; background-color: #db2777; color: #fff; text-align: center; border-radius: 50px; padding: 12px 24px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
         .bottom-about-trigger { position: fixed; bottom: 20px; left: 20px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px); padding: 8px 20px; border-radius: 50px; font-size: 12px; font-weight: 700; color: #db2777; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 50; border: 1px solid rgba(219, 39, 119, 0.2); }
+        /* Cart enhancements */
+        .cart-item { animation: cartSlideIn 0.3s ease; }
+        @keyframes cartSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .cart-empty { text-align: center; padding: 40px 20px; color: #f9a8d4; }
+        .cart-empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .cart-empty-text { font-size: 14px; font-weight: 700; color: #f472b6; }
+        .cart-empty-sub { font-size: 11px; color: #d1d5db; font-weight: 600; margin-top: 4px; }
+        .clear-cart-btn { background: none; border: 1px solid #fecdd3; color: #f43f5e; font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 50px; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
+        .clear-cart-btn:hover { background: #fff1f2; }
+        .cart-count-badge { background: #fdf2f8; color: #db2777; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 50px; margin-left: 8px; }
+        .remove-item-btn { background: none; border: none; color: #f472b6; font-size: 18px; cursor: pointer; padding: 2px 6px; border-radius: 50%; transition: 0.2s; line-height: 1; }
+        .remove-item-btn:hover { background: #fff1f2; color: #e11d48; }
+        /* Performance: reduce composite layers for off-screen content */
+        .snap-section { contain: layout style paint; }
     </style>
 </head>
 <body class="text-gray-800">
@@ -69,20 +84,32 @@
     </button>
 
     <aside id="cart-sidebar" class="bg-white/95 backdrop-blur-xl shadow-2xl p-6 flex flex-col md:w-96">
-        <div class="flex justify-between items-center mb-6"><h2 class="serif-heading text-3xl text-pink-800">Your Cart</h2><button onclick="toggleCart()" class="text-pink-600 text-4xl">&times;</button></div>
-        <div class="bg-pink-100 text-pink-700 text-[10px] font-bold p-2 rounded-lg mb-4 text-center">🚚 ₹50 shipping on orders below ₹500. Free shipping above ₹500!</div>
-        <div id="cart-items" class="flex-grow overflow-y-auto space-y-4 mb-4 pr-2 scrollbar-hide"></div>
-        
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Delivery Address</label><textarea id="cart-address" placeholder="Area, City..." class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none h-16 resize-none shadow-inner"></textarea></div>
-            <div><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Pincode</label><input type="number" id="cart-pincode" placeholder="6-digit" class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none shadow-inner h-16"></div>
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center"><h2 class="serif-heading text-3xl text-pink-800">Your Cart</h2><span id="cart-badge" class="cart-count-badge">0</span></div>
+            <button onclick="toggleCart()" class="text-pink-600 text-4xl leading-none">&times;</button>
         </div>
-
-        <div class="border-t border-pink-100 pt-4">
-            <div class="flex justify-between text-xs font-bold text-gray-500 mb-1 px-1"><span>Items Total:</span><span id="items-total">₹0</span></div>
-            <div class="flex justify-between text-xs font-bold text-gray-500 mb-3 px-1"><span>Shipping:</span><span id="shipping-total">₹0</span></div>
-            <div class="flex justify-between text-xl font-extrabold text-gray-800 mb-6 px-1"><span>Grand Total:</span><span id="cart-total">₹0</span></div>
-            <button onclick="checkout()" class="w-full py-4 bg-pink-600 hover:bg-pink-700 text-white rounded-2xl font-bold uppercase tracking-widest active:scale-95 transition shadow-lg">Send Collective Order</button>
+        <div class="flex justify-between items-center mb-4">
+            <div class="bg-pink-100 text-pink-700 text-[10px] font-bold p-2 rounded-lg text-center flex-1">🚚 ₹50 shipping below ₹500 · Free above ₹500!</div>
+            <button onclick="clearCart()" class="clear-cart-btn ml-2" id="clear-cart-btn" style="display:none">✕ Clear</button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto space-y-3 mb-4 pr-2 scrollbar-hide"></div>
+        
+        <div id="cart-footer" class="">
+            <div class="mb-3">
+                <label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Customer Name</label>
+                <input type="text" id="cart-name" placeholder="Your full name" class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none shadow-inner h-10">
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Delivery Address</label><textarea id="cart-address" placeholder="Area, City..." class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none h-16 resize-none shadow-inner"></textarea></div>
+                <div><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Pincode</label><input type="number" id="cart-pincode" placeholder="6-digit" class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none shadow-inner h-16"></div>
+            </div>
+            <div class="border-t border-pink-100 pt-4">
+                <div class="flex justify-between text-xs font-bold text-gray-500 mb-1 px-1"><span>Items Total:</span><span id="items-total">₹0</span></div>
+                <div class="flex justify-between text-xs font-bold text-gray-500 mb-3 px-1"><span>Shipping:</span><span id="shipping-total">₹0</span></div>
+                <div class="flex justify-between text-xl font-extrabold text-gray-800 mb-6 px-1"><span>Grand Total:</span><span id="cart-total">₹0</span></div>
+                <p id="cart-validation-error" class="hidden text-red-500 text-[11px] font-bold text-center mb-3">⚠️ Please fill in all highlighted fields above!</p>
+                <button onclick="checkout()" id="checkout-btn" class="w-full py-4 bg-pink-600 hover:bg-pink-700 text-white rounded-2xl font-bold uppercase tracking-widest active:scale-95 transition shadow-lg">Send Collective Order</button>
+            </div>
         </div>
     </aside>
 
@@ -94,11 +121,7 @@
     </header>
 
     <nav class="bg-white/90 backdrop-blur-md shadow-sm py-4 sticky top-0 z-50 px-4 flex items-center justify-between shrink-0">
-        <div class="w-10 md:w-16 invisible"></div> <div class="flex-1 flex justify-start sm:justify-center gap-4 md:gap-12 text-[10px] md:text-sm font-bold text-pink-700 uppercase tracking-widest overflow-x-auto whitespace-nowrap scrollbar-hide px-4">
-            <button id="nav-covers" onclick="scrollToSection('covers')" class="nav-btn">Phone Cases</button>
-            <button id="nav-keychains" onclick="scrollToSection('keychains')" class="nav-btn">Keychains</button>
-            <button id="nav-hair-accessories" onclick="scrollToSection('hair-accessories')" class="nav-btn">Hair Accessories</button>
-            <button id="nav-poshak" onclick="scrollToSection('poshak')" class="nav-btn">Poshak</button>
+        <div class="w-10 md:w-16 invisible"></div> <div id="dynamic-nav" class="flex-1 flex justify-start sm:justify-center gap-4 md:gap-12 text-[10px] md:text-sm font-bold text-pink-700 uppercase tracking-widest overflow-x-auto whitespace-nowrap scrollbar-hide px-4">
         </div>
         <button onclick="toggleCart()" class="text-pink-600 hover:scale-110 transition relative w-10 md:w-16 flex justify-end">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
@@ -106,22 +129,14 @@
         </button>
     </nav>
 
-    <main class="snap-container scrollbar-hide">
-        <section id="covers" class="snap-section"><div class="glass-tile rounded-[2rem] p-4 md:p-10 shadow-xl"><h2 class="serif-heading text-2xl md:text-5xl mb-8 text-pink-800 border-b-2 border-pink-300 inline-block pb-1">Phone Cases</h2><div id="covers-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"></div><div id="footer-covers"></div></div></section>
-        <section id="keychains" class="snap-section"><div class="glass-tile rounded-[2rem] p-4 md:p-10 shadow-xl"><h2 class="serif-heading text-2xl md:text-5xl mb-8 text-pink-800 border-b-2 border-pink-300 inline-block pb-1">Keychains</h2><div id="keychains-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"></div><div id="footer-keychains"></div></div></section>
-        <section id="hair-accessories" class="snap-section"><div class="glass-tile rounded-[2rem] p-4 md:p-10 shadow-xl"><h2 class="serif-heading text-2xl md:text-5xl mb-8 text-pink-800 border-b-2 border-pink-300 inline-block pb-1">Hair Accessories</h2><div id="hair-accessories-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"></div><div id="footer-hair-accessories"></div></div></section>
-        <section id="poshak" class="snap-section"><div class="glass-tile rounded-[2rem] p-4 md:p-10 shadow-xl"><h2 class="serif-heading text-2xl md:text-5xl mb-8 text-pink-800 border-b-2 border-pink-300 inline-block pb-1">Poshak</h2><div id="poshak-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"></div><div id="footer-poshak"></div></div></section>
+    <main class="snap-container scrollbar-hide" id="dynamic-sections">
     </main>
 
     <script>
         const SITE_URL = "https://craftedwithlovee.github.io/Crochets";
         const WHATSAPP_NUMBER = "918619703099";
+        const API_BASE = window.location.origin;
         let cart = JSON.parse(localStorage.getItem('crochetCart')) || [];
-
-        const phoneCaseData = [ { id: 1, name: "Sweet Strawberry", price: 350 }, { id: 2, name: "Daisy Mist", price: 250 }, { id: 3, name: "Mulberry Mist", price: 250 }, { id: 4, name: "Blue Blossom", price: 300 }, { id: 5, name: "Cherry Mist", price: 250 }, { id: 6, name: "Blooming Tulip", price: 300 }, { id: 7, name: "Sky Mist", price: 250 }, { id: 8, name: "Classic Bollywood", price: 300 }, { id: 9, name: "Floral Classic", price: 300 }, { id: 10, name: "Turtle Case", price: 300 }, { id: 11, name: "Handmade Shell", price: 300 }, { id: 12, name: "Pinky Bloom", price: 250 }, { id: 13, name: "Bow Case", price: 250 }, { id: 14, name: "Bunny Case", price: 300 }, { id: 15, name: "Daisy Garden", price: 250 }, { id: 17, name: "Mustard Bow", price: 270 }, { id: 18, name: "Cozy Crochet", price: 300 }, { id: 19, name: "Accorn Case", price: 300 }, { id: 20, name: "Two Shades", price: 270 }, { id: 21, name: "Bow Case", price: 270 }, { id: 22, name: "Bunny Case 2", price: 300 }, { id: 23, name: "Daisy Blossom", price: 250 }, { id: 24, name: "Bow Case 2", price: 250 }, { id: 25, name: "Panda Case", price: 300 }, { id: 26, name: "Butterfly Case", price: 300 }, { id: 27, name: "The Red Bunny", price: 300 }, { id: 28, name: "The Cute Rabbit", price: 350 }, { id: 29, name: "Bunny Case 3", price: 320 }, { id: 30, name: "The Little Butterfly", price: 250 }, { id: 31, name: "Standard Case", price: 300 }, { id: 32, name: "Handmade Sheep", price: 270 }, { id: 33, name: "Red Bow", price: 250 }, { id: 34, name: "Bright Sunflower", price: 270 }, { id: 35, name: "The Black Beauty", price: 250 } ];
-        const keychainData = [ { name: "Sunny Daisy", price: 100 }, { name: "Evil eye with name letters", price: 200 }, { name: "Mochi octopus", price: 200 }, { name: "bean heart", price: 100 }, { name: "pink paw clouds", price: 100 }, { name: "camera keychain", price: 150 }, { name: "yummy cones", price: 150 }, { name: "red velvet bow", price: 120 }, { name: "misty star", price: 120 }, { name: "evil eye", price: 100 }, { name: "coco bear", price: 200 }, { name: "Daisy keychain", price: 100 }, { name: "misty star 2", price: 120 }, { name: "the balls", price: 150 }, { name: "shiny jelly fish", price: 220 }, { name: "bubblegum ghost", price: 150 }, { name: "rainbow", price: 150 }, { name: "purple star", price: 200 }, { name: "tulip pop", price: 220 }, { name: "football keychain", price: 150 }, { name: "the cricket key chains", price: 150 }, { name: "sky swirl tulip", price: 220 }, { name: "the sun , Earth", price: 200 }, { name: "capachino mug", price: 150 }, { name: "Dusty clouds", price: 100 }, { name: "Fancy cherries", price: 220 }, { name: "purple dino star", price: 200 }, { name: "the colour palette", price: 100 }, { name: "lilac heart with name initial.", price: 200 }, { name: "purple dino star", price: 200 }, { name: "flower keychain", price: 100 } ];
-        const hairAccessoryData = [ { id: 1, name: "Flower clips (x2)", price: 80 }, { id: 2, name: "Blue parandi", price: 120 }, { id: 3, name: "Cherry", price: 100 }, { id: 4, name: "Gajra", price: 250 }, { id: 5, name: "Cute bows", price: 120 }, { id: 6, name: "butterfly Clutcher", price: 120 }, { id: 7, name: "White parandi", price: 120 }, { id: 8, name: "Daisy", price: 100 }, { id: 9, name: "Bow", price: 100 }, { id: 10, name: "Daisy", price: 80 }, { id: 11, name: "Flower Clutcher", price: 100 }, { id: 12, name: "The Red Bow", price: 150 }, { id: 13, name: "Bow 2", price: 100 }, { id: 14, name: "Fancy Bow", price: 200 }, { id: 15, name: "Flower clips (x2)", price: 50 }, { id: 16, name: "Flower Rubberband", price: 80 }, { id: 18, name: "Flower Hairpins", price: 100 }, { id: 19, name: "Little Bow", price: 50 }, { id: 20, name: "Bow rubberbands(x2)", price: 120 }, { id: 21, name: "Bow Clutchers", price: 80 }, { id: 22, name: "Flower clutcher2", price: 80 }, { id: 23, name: "Rose clutcher", price: 150 }, { id: 24, name: "Combo", price: 150 }, { id: 25, name: "Flower Clutcher3", price: 100 }, { id: 26, name: "Rose Rubberband", price: 100 }, { id: 27, name: "Sunflower clutcher", price: 80 }, { id: 28, name: "Scrunchie", price: 50 }, { id: 29, name: "Tulip Clutcher", price: 150 }, { id: 30, name: "Bow Clutcher", price: 100 }, { id: 31, name: "red flower clutcher", price: 100 }, { id: 32, name: "Sunflower clutcher", price: 150 } ];
-        const poshakData = [ { id: 1, name: "Red&White poshak", price: 500 }, { id: 2, name: "FLower poshak", price: 500 } ];
 
         function toggleCart() { const c = document.getElementById('cart-sidebar'); c.classList.toggle('open'); if(c.classList.contains('open')) history.pushState({ modal: 'cart' }, ''); }
         function toggleAbout() { const a = document.getElementById('about-overlay'); a.classList.toggle('open'); if(a.classList.contains('open')) history.pushState({ modal: 'about' }, ''); }
@@ -130,28 +145,76 @@
         window.onpopstate = () => { document.getElementById('cart-sidebar').classList.remove('open'); document.getElementById('about-overlay').classList.remove('open'); document.getElementById('imageModal').classList.add('hidden'); document.body.style.overflow = 'auto'; };
         function scrollToSection(id) { document.querySelector('.snap-container').scrollTo({ left: document.getElementById(id).offsetLeft, behavior: 'smooth' }); }
 
-        function generateProducts(containerId, count, category, folder, prefix, placeholder) {
-            const container = document.getElementById(containerId); if(!container) return;
-            let items = (containerId === 'covers-grid') ? phoneCaseData : (containerId === 'keychains-grid') ? keychainData.map((it, idx) => ({...it, id: idx+1})) : (containerId === 'hair-accessories-grid') ? hairAccessoryData : poshakData;
-            container.innerHTML = items.map((item, i) => {
-                const sn = i + 1; const pid = `${prefix}-${item.id}`; const ext = (containerId === 'poshak-grid') ? '.jpg.jpg' : '.jpg.jpeg'; const img = `images/${folder}/${prefix}${item.id}${ext}`;
-                let sz = (containerId === 'hair-accessories-grid' && [6, 11, 21, 22, 23, 25, 29, 32].includes(item.id)) ? `<div class="mt-2 text-left"><p class="text-pink-400 font-bold uppercase mb-1 text-[9px]">Size:</p><select id="size-${pid}" onchange="updateAccessoryPrice('${pid}', ${item.price})" class="w-full p-1 text-[10px] border border-pink-50 rounded bg-pink-50/50 outline-none"><option value="standard">Small (₹${item.price})</option><option value="premium">Big (₹${item.price + 20})</option></select></div>` : "";
-                
-                /* Device renamed to Samsung S series */
-                let dv = (containerId === 'covers-grid') ? `<div class="mt-2 text-left"><p class="text-pink-400 font-bold uppercase mb-1 text-[10px]">Device:</p><select id="type-${pid}" onchange="updateCasePrice('${pid}', ${item.price})" class="w-full p-1 text-[10px] border border-pink-50 rounded bg-pink-50/50 outline-none"><option value="standard">Standard (₹${item.price})</option><option value="premium">iPhone / Samsung S series (₹${item.price + 50})</option></select></div>` : "";
-                
+        /* ── Dynamic Store Loading from API ─────────────────────────────── */
+        async function loadStore() {
+            try {
+                const res = await fetch(`${API_BASE}/api/categories/with-products`);
+                const categories = await res.json();
+                const navContainer = document.getElementById('dynamic-nav');
+                const sectionsContainer = document.getElementById('dynamic-sections');
+                navContainer.innerHTML = '';
+                sectionsContainer.innerHTML = '';
+
+                categories.forEach(cat => {
+                    // Create nav button
+                    const navBtn = document.createElement('button');
+                    navBtn.id = `nav-${cat.name}`;
+                    navBtn.className = 'nav-btn';
+                    navBtn.textContent = cat.display_name;
+                    navBtn.onclick = () => scrollToSection(cat.name);
+                    navContainer.appendChild(navBtn);
+
+                    // Create section
+                    const section = document.createElement('section');
+                    section.id = cat.name;
+                    section.className = 'snap-section';
+                    section.innerHTML = `<div class="glass-tile rounded-[2rem] p-4 md:p-10 shadow-xl"><h2 class="serif-heading text-2xl md:text-5xl mb-8 text-pink-800 border-b-2 border-pink-300 inline-block pb-1">${cat.display_name}</h2><div id="${cat.name}-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"></div><div id="footer-${cat.name}"></div></div>`;
+                    sectionsContainer.appendChild(section);
+
+                    // Render products
+                    renderCategoryProducts(cat);
+                });
+
+                // Re-init intersection observer for nav highlighting
+                initNavObserver();
+            } catch (err) {
+                console.error('Failed to load store:', err);
+            }
+        }
+
+        function renderCategoryProducts(cat) {
+            const container = document.getElementById(`${cat.name}-grid`);
+            if (!container || !cat.products) return;
+
+            container.innerHTML = cat.products.map((item, i) => {
+                const sn = i + 1;
+                const pid = `prod-${item.id}`;
+                const img = item.image_path || '';
+
+                // Device selector for categories with device option
+                let dv = cat.has_device_option ? `<div class="mt-2 text-left"><p class="text-pink-400 font-bold uppercase mb-1 text-[10px]">Device:</p><select id="type-${pid}" onchange="updateCasePrice('${pid}', ${item.price})" class="w-full p-1 text-[10px] border border-pink-50 rounded bg-pink-50/50 outline-none"><option value="standard">Standard (₹${item.price})</option><option value="premium">${cat.device_premium_label} (₹${item.price + cat.device_premium_extra})</option></select></div>` : '';
+
+                // Size selector for products with size option
+                let sz = item.has_size_option ? `<div class="mt-2 text-left"><p class="text-pink-400 font-bold uppercase mb-1 text-[9px]">Size:</p><select id="size-${pid}" onchange="updateAccessoryPrice('${pid}', ${item.price})" class="w-full p-1 text-[10px] border border-pink-50 rounded bg-pink-50/50 outline-none"><option value="standard">Small (₹${item.price})</option><option value="premium">Big (₹${item.price + (item.size_premium_extra || 20)})</option></select></div>` : '';
+
                 return `<div class="bg-white/80 p-3 rounded-2xl shadow-sm flex flex-col h-full border border-pink-100 backdrop-blur-sm group">
-                    <div class="aspect-square bg-pink-50 rounded-xl mb-3 overflow-hidden cursor-zoom-in"><img src="${img}" loading="lazy" onclick="openModal('${img}')" class="w-full h-full object-cover transition transform group-hover:scale-105" onerror="this.src='https://placehold.co/400?text=${category}'"></div>
+                    <div class="aspect-square bg-pink-50 rounded-xl mb-3 overflow-hidden cursor-zoom-in"><img src="${img}" loading="lazy" onclick="openModal('${img}')" class="w-full h-full object-cover transition transform group-hover:scale-105" onerror="this.src='https://placehold.co/400?text=${cat.display_name}'"></div>
                     <div class="flex-grow px-1 text-center"><h3 class="font-bold text-gray-800 text-[10px] md:text-sm mb-1 uppercase tracking-tighter">${sn}. ${item.name}</h3><p id="price-${pid}" class="text-pink-600 font-extrabold text-[11px] md:text-lg mb-2">₹${item.price}</p>${dv}${sz}<div class="mt-1 text-left"><p class="text-[7px] text-pink-400 font-bold italic mb-1 uppercase tracking-tighter">Customizations:</p><textarea id="note-${pid}" placeholder="models, color, design" class="w-full p-2 text-[9px] border border-pink-50 rounded bg-white outline-none h-10 shadow-inner resize-none"></textarea></div></div>
-                    <div class="grid grid-cols-2 gap-2 mt-3"><button onclick="addToCart('${item.name}', ${item.price}, '${pid}', '${category}', ${sn}, '${img}')" class="py-2 bg-pink-100 text-pink-600 rounded-xl text-[8px] font-bold uppercase border border-pink-200 active:bg-pink-200">Add to Cart</button><button onclick="orderNow('${item.name}', ${item.price}, '${pid}', '${category}', ${sn}, '${img}')" class="py-2 bg-pink-500 text-white rounded-xl text-[8px] font-bold uppercase active:bg-pink-600 transition">Order Now</button></div></div>`;
+                    <div class="grid grid-cols-2 gap-2 mt-3"><button onclick="addToCart('${item.name.replace(/'/g, "\\'") }', ${item.price}, '${pid}', '${cat.display_name.replace(/'/g, "\\'") }', ${sn}, '${img}')" class="py-2 bg-pink-100 text-pink-600 rounded-xl text-[8px] font-bold uppercase border border-pink-200 active:bg-pink-200">Add to Cart</button><button onclick="orderNow('${item.name.replace(/'/g, "\\'") }', ${item.price}, '${pid}', '${cat.display_name.replace(/'/g, "\\'") }', ${sn}, '${img}')" class="py-2 bg-pink-500 text-white rounded-xl text-[8px] font-bold uppercase active:bg-pink-600 transition">Order Now</button></div></div>`;
             }).join('');
-            injectFooter(containerId.replace('-grid', ''));
+
+            injectFooter(cat.name);
+        }
+
+        function initNavObserver() {
+            const obs = new IntersectionObserver((es) => { es.forEach(e => { if (e.isIntersecting) { document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); const navEl = document.getElementById('nav-' + e.target.id); if (navEl) navEl.classList.add('active'); } }); }, { root: document.querySelector('.snap-container'), threshold: 0.6 });
+            document.querySelectorAll('.snap-section').forEach(s => obs.observe(s));
         }
 
         function addToCart(n, p, id, cat, sn, img) {
             let fp = Number(p); let s = "";
-            if (cat === 'Phone Case' && document.getElementById(`type-${id}`)?.value === 'premium') { fp += 50; s = " (Premium)"; }
-            if (cat === 'Hair Accessory' && document.getElementById(`size-${id}`)?.value === 'premium') { fp += 20; s = " (Big)"; }
+            if (document.getElementById(`type-${id}`)?.value === 'premium') { fp += 50; s = " (Premium)"; }
+            if (document.getElementById(`size-${id}`)?.value === 'premium') { fp += 20; s = " (Big)"; }
             const note = document.getElementById(`note-${id}`).value || "Standard";
             const full = `${n}${s}`; const ex = cart.find(i => i.name === full && i.note === note && i.category === cat);
             if (ex) ex.qty += 1; else cart.push({ name: full, price: fp, note: note, category: cat, qty: 1, sn: sn, img: img });
@@ -160,50 +223,80 @@
 
         function changeQuantity(idx, d) { cart[idx].qty += d; if (cart[idx].qty < 1) cart.splice(idx, 1); updateCartUI(); }
         function removeFromCart(idx) { cart.splice(idx, 1); updateCartUI(); }
+        function clearCart() { if (cart.length === 0) return; cart = []; updateCartUI(); }
 
         function updateCartUI() {
             localStorage.setItem('crochetCart', JSON.stringify(cart));
-            document.getElementById('cart-items').innerHTML = cart.map((it, i) => `<div class="bg-pink-50 p-3 rounded-xl relative border border-pink-100 shadow-sm flex gap-3 items-center">
-                <div class="w-12 h-12 bg-white rounded-lg overflow-hidden shrink-0 border border-pink-100 shadow-inner"><img src="${it.img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=${it.category}'"></div>
-                <div class="flex-grow"><button onclick="removeFromCart(${i})" class="absolute top-2 right-2 text-pink-400 font-bold">&times;</button>
-                <h4 class="font-bold text-pink-800 text-[10px] uppercase leading-tight">${it.sn}. ${it.name}</h4><p class="text-pink-600 font-bold text-xs">₹${it.price * it.qty}</p>
-                <div class="qty-bar"><button onclick="changeQuantity(${i}, -1)" class="qty-btn">-</button><span class="qty-val">${it.qty}</span><button onclick="changeQuantity(${i}, 1)" class="qty-btn">+</button></div>
-                <p class="text-[8px] text-gray-400 font-bold uppercase mt-1 tracking-widest italic leading-tight">Custom: ${it.note}</p></div></div>`).join('');
+            const cartItemsEl = document.getElementById('cart-items');
+            const clearBtn = document.getElementById('clear-cart-btn');
+            const cartFooter = document.getElementById('cart-footer');
+            const c = cart.reduce((s, i) => s + i.qty, 0);
+
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🧺</div><p class="cart-empty-text">Your cart is empty</p><p class="cart-empty-sub">Add some lovely crochet items!</p></div>`;
+                clearBtn.style.display = 'none';
+                cartFooter.style.display = 'none';
+            } else {
+                clearBtn.style.display = 'inline-block';
+                cartFooter.style.display = 'block';
+                cartItemsEl.innerHTML = cart.map((it, i) => `<div class="cart-item bg-pink-50 p-3 rounded-xl relative border border-pink-100 shadow-sm flex gap-3 items-center">
+                    <div class="w-14 h-14 bg-white rounded-lg overflow-hidden shrink-0 border border-pink-100 shadow-inner"><img src="${it.img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=${it.category}'"></div>
+                    <div class="flex-grow pr-6">
+                        <h4 class="font-bold text-pink-800 text-[10px] uppercase leading-tight">${it.sn}. ${it.name}</h4>
+                        <p class="text-pink-600 font-extrabold text-sm mt-1">₹${it.price * it.qty} <span class="text-[9px] text-gray-400 font-semibold">(₹${it.price} × ${it.qty})</span></p>
+                        <div class="qty-bar mt-2"><button onclick="changeQuantity(${i}, -1)" class="qty-btn">−</button><span class="qty-val">${it.qty}</span><button onclick="changeQuantity(${i}, 1)" class="qty-btn">+</button></div>
+                        <p class="text-[8px] text-gray-400 font-bold uppercase mt-1 tracking-widest italic leading-tight">✎ ${it.note}</p>
+                    </div>
+                    <button onclick="removeFromCart(${i})" class="remove-item-btn absolute top-2 right-2" title="Remove">✕</button>
+                </div>`).join('');
+            }
             
-            const t = cart.reduce((s, i) => s + (i.price * i.qty), 0); const ship = (t < 500 && t > 0) ? 50 : 0; const c = cart.reduce((s, i) => s + i.qty, 0);
+            const t = cart.reduce((s, i) => s + (i.price * i.qty), 0); const ship = (t < 500 && t > 0) ? 50 : 0;
             document.getElementById('items-total').innerText = `₹${t}`; document.getElementById('shipping-total').innerText = (ship === 0 && t > 0) ? "FREE" : `₹${ship}`; document.getElementById('cart-total').innerText = `₹${t + ship}`; document.getElementById('cart-count').innerText = c; document.getElementById('cart-count-top').innerText = c;
+            document.getElementById('cart-badge').innerText = `${c} item${c !== 1 ? 's' : ''}`;
         }
 
         function checkout() {
             if (cart.length === 0) return alert("Cart is empty!");
-            const addr = document.getElementById('cart-address').value.trim(); const pin = document.getElementById('cart-pincode').value.trim();
-            if (!addr || !pin) return alert("Please enter both Address and Pincode!");
+            
+            const nameEl = document.getElementById('cart-name');
+            const addrEl = document.getElementById('cart-address');
+            const pinEl = document.getElementById('cart-pincode');
+            const errEl = document.getElementById('cart-validation-error');
+            
+            let valid = true;
+            [nameEl, addrEl, pinEl].forEach(el => {
+                if(!el.value.trim()) { el.style.border = '2px solid #ef4444'; valid = false; }
+                else { el.style.border = ''; }
+            });
+            
+            if (!valid) { errEl.classList.remove('hidden'); return; }
+            else { errEl.classList.add('hidden'); }
+            
+            const name = nameEl.value.trim();
+            const addr = addrEl.value.trim(); 
+            const pin = pinEl.value.trim();
+            
             const itemsTotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
             const shippingFee = (itemsTotal < 500 && itemsTotal > 0) ? 50 : 0;
-            let msg = "Hello! Collective order from Crafted with Love:\n\n";
-            [...new Set(cart.map(i => i.category))].forEach(cat => { 
-                msg += `--- ${cat.toUpperCase()} ---\n`; 
-                cart.filter(i => i.category === cat).forEach(it => { 
-                    msg += `${it.sn}. *${it.name}* (x${it.qty})\n   Price: Rs. ${it.price * it.qty}\n   Customizations: ${it.note}\n   Image: ${SITE_URL}/${it.img}\n\n`; 
-                }); 
+            let msg = `I would like to order from craftedwithlove\n\n👤 *Name:* ${name}\n\n*Items:*\n`;
+            cart.forEach(it => { 
+                const encodedImgUrl = encodeURI(`${API_BASE}/${it.img}`);
+                msg += `• ${it.qty}x *${it.name}* (₹${it.price * it.qty})\n  Note: ${it.note}\n  📸 Link: ${encodedImgUrl}\n\n`; 
             });
-            msg += `Items Total: Rs. ${itemsTotal}\nShipping: ${shippingFee === 0 ? "FREE" : "Rs. " + shippingFee}\n*Grand Total: Rs. ${itemsTotal + shippingFee}*\n\n*Delivery Address:* ${addr}\n*Pincode:* ${pin}\n\nPlease let me know if these are available.`;
+            msg += `─────────\n💰 *Total Amount:* ₹${itemsTotal + shippingFee} (includes ₹${shippingFee} shipping)\n\n📍 *Delivery Address:*\n${addr}\nPincode: ${pin}`;
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function orderNow(n, p, id, cat, sn, img) {
-            let fp = Number(p); let s = ""; if (cat === 'Phone Case' && document.getElementById(`type-${id}`)?.value === 'premium') { fp += 50; s = " (Premium)"; }
-            if (cat === 'Hair Accessory' && document.getElementById(`size-${id}`)?.value === 'premium') { fp += 20; s = " (Big)"; }
-            const note = document.getElementById(`note-${id}`).value || "Standard";
-            const shipping = fp < 500 ? 50 : 0;
-            const msg = `Hello! Order from Crafted with Love:\n\nProduct: ${sn}. ${n}${s}\nPrice: Rs. ${fp}\nShipping: ${shipping === 0 ? "FREE" : "Rs. " + shipping}\n*Total: Rs. ${fp + shipping}*\nCustomizations: ${note}\n\nImage: ${SITE_URL}/${img}\n\nPlease let me know if this is available.`;
-            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+            addToCart(n, p, id, cat, sn, img);
+            const c = document.getElementById('cart-sidebar');
+            if(!c.classList.contains('open')) toggleCart();
         }
 
         function updateCasePrice(id, b) { document.getElementById(`price-${id}`).innerText = `₹${document.getElementById(`type-${id}`).value === 'premium' ? Number(b) + 50 : b}`; }
         function updateAccessoryPrice(id, b) { document.getElementById(`price-${id}`).innerText = `₹${document.getElementById(`size-${id}`).value === 'premium' ? Number(b) + 20 : b}`; }
         
-        /* Persistent "Thank You" footer as shown in image_d3b380.png */
         function injectFooter(sid) { 
             document.getElementById('footer-' + sid).innerHTML = `<div class="mt-auto pt-24 pb-12 text-center px-4">
                 <p class="serif-heading text-xl md:text-4xl text-pink-800 leading-tight italic">Thank you for supporting us.<br>💞 Every order truly means the world to me 🧶</p>
@@ -212,13 +305,9 @@
         }
         
         function showToast() { const t = document.getElementById("toast"); t.className = "show"; setTimeout(()=>t.className = "", 3000); }
-        const obs = new IntersectionObserver((es) => { es.forEach(e => { if (e.isIntersecting) { document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById('nav-' + e.target.id).classList.add('active'); } }); }, { root: document.querySelector('.snap-container'), threshold: 0.6 });
-        document.querySelectorAll('.snap-section').forEach(s => obs.observe(s));
-        
-        generateProducts('covers-grid', 35, 'Phone Case', 'covers', 'phonecover', 'eg.');
-        generateProducts('keychains-grid', 31, 'Keychain', 'keychains', 'keychain', 'eg.');
-        generateProducts('hair-accessories-grid', 32, 'Hair Accessory', 'hair acessories', 'hairclip', 'eg.');
-        generateProducts('poshak-grid', 2, 'Poshak', 'poshaks', 'poshak', 'eg.');
+
+        // Load store from API and initialize
+        loadStore();
         updateCartUI();
     </script>
 </body>

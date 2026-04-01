@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Crafted with Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css?v=2">
+</head>
+<body>
+    <!-- ── Top Bar ─────────────────────────────────────────────────────── -->
+    <header class="admin-header">
+        <div class="header-left">
+            <span class="header-logo">🧶</span>
+            <h1 class="serif-heading header-title">Crafted with Love</h1>
+            <span class="header-badge">Admin</span>
+        </div>
+        <div class="header-right">
+            <button onclick="openCredentialsModal()" class="btn btn-outline btn-sm">🔒 Security</button>
+            <a href="/" class="btn btn-ghost" target="_blank">👁️ View Store</a>
+            <button onclick="logout()" class="btn btn-outline-danger">Logout</button>
+        </div>
+    </header>
+
+    <!-- ── Sidebar + Content ───────────────────────────────────────────── -->
+    <div class="admin-layout">
+        <nav class="admin-sidebar">
+            <button class="sidebar-btn active" onclick="showTab('dashboard')" data-tab="dashboard">
+                <span class="sidebar-icon">📊</span> Dashboard
+            </button>
+            <button class="sidebar-btn" onclick="showTab('products')" data-tab="products">
+                <span class="sidebar-icon">🧸</span> Products
+            </button>
+            <button class="sidebar-btn" onclick="showTab('categories')" data-tab="categories">
+                <span class="sidebar-icon">📂</span> Categories
+            </button>
+            <button class="sidebar-btn" onclick="showTab('add-product')" data-tab="add-product">
+                <span class="sidebar-icon">➕</span> Add Product
+            </button>
+            <button class="sidebar-btn" onclick="showTab('add-category')" data-tab="add-category">
+                <span class="sidebar-icon">📁</span> Add Category
+            </button>
+            <button class="sidebar-btn text-red-500 mt-auto" onclick="logout()" style="color: #e11d48; margin-top: auto;">
+                <span class="sidebar-icon">🚪</span> Logout
+            </button>
+        </nav>
+
+        <main class="admin-content">
+            <!-- ── Dashboard Tab ──────────────────────────────────────── -->
+            <section id="tab-dashboard" class="tab-panel active">
+                <h2 class="section-title">Dashboard Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card stat-pink">
+                        <div class="stat-icon">🧸</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="stat-products">0</span>
+                            <span class="stat-label">Total Products</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-purple">
+                        <div class="stat-icon">📂</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="stat-categories">0</span>
+                            <span class="stat-label">Categories</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-rose">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="stat-avg-price">₹0</span>
+                            <span class="stat-label">Avg. Price</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-coral">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="stat-highest">₹0</span>
+                            <span class="stat-label">Highest Price</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-quick">
+                    <h3 class="subsection-title">Quick Actions</h3>
+                    <div class="quick-actions">
+                        <button onclick="showTab('add-product')" class="quick-btn">➕ Add New Product</button>
+                        <button onclick="showTab('add-category')" class="quick-btn">📁 Add New Category</button>
+                        <button onclick="showTab('products')" class="quick-btn">🧸 Manage Products</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Products Tab ───────────────────────────────────────── -->
+            <section id="tab-products" class="tab-panel">
+                <div class="section-header">
+                    <h2 class="section-title">All Products</h2>
+                    <div class="section-actions">
+                        <select id="filter-category" onchange="loadProducts()" class="input select-sm">
+                            <option value="">All Categories</option>
+                        </select>
+                        <button onclick="showTab('add-product')" class="btn btn-primary btn-sm">➕ Add Product</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th width="60">Image</th>
+                                <th>Name</th>
+                                <th width="100">Price</th>
+                                <th width="150">Category</th>
+                                <th width="80">Size Opt.</th>
+                                <th width="80">Order</th>
+                                <th width="140">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <tr><td colspan="7" class="table-empty">Loading products...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ── Categories Tab ─────────────────────────────────────── -->
+            <section id="tab-categories" class="tab-panel">
+                <div class="section-header">
+                    <h2 class="section-title">All Categories</h2>
+                    <button onclick="showTab('add-category')" class="btn btn-primary btn-sm">📁 Add Category</button>
+                </div>
+                <div class="categories-grid" id="categories-grid">
+                    <div class="table-empty">Loading categories...</div>
+                </div>
+            </section>
+
+            <!-- ── Add Product Tab ────────────────────────────────────── -->
+            <section id="tab-add-product" class="tab-panel">
+                <h2 class="section-title" id="product-form-title">Add New Product</h2>
+                <form id="productForm" class="admin-form" onsubmit="handleProductSubmit(event)">
+                    <input type="hidden" id="edit-product-id" value="">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prod-name">Product Name *</label>
+                            <input type="text" id="prod-name" placeholder="e.g. Sweet Strawberry" required class="input">
+                        </div>
+                        <div class="form-group">
+                            <label for="prod-price">Price (₹) *</label>
+                            <input type="number" id="prod-price" placeholder="e.g. 300" required min="1" class="input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prod-category">Category *</label>
+                            <select id="prod-category" required class="input">
+                                <option value="">Select category</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="prod-sort">Sort Order</label>
+                            <input type="number" id="prod-sort" placeholder="Auto" min="0" class="input">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-image">Image Path / URL</label>
+                        <input type="text" id="prod-image" placeholder="Leave blank for auto-generated path" class="input">
+                        <span class="form-hint">Or upload an image below</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Image</label>
+                        <div class="upload-area" id="upload-area">
+                            <input type="file" id="prod-file" accept="image/*" onchange="handleFileSelect(event)" class="upload-input">
+                            <div class="upload-content" id="upload-content">
+                                <span class="upload-icon">📷</span>
+                                <span class="upload-text">Click or drag to upload</span>
+                            </div>
+                            <img id="upload-preview" class="upload-preview hidden" src="" alt="Preview">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="prod-size-option">
+                                <span class="checkmark"></span>
+                                Has Size Option (+₹20 for Big)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="product-submit-btn">Add Product</button>
+                        <button type="button" class="btn btn-ghost" onclick="resetProductForm()">Cancel</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ── Add Category Tab ───────────────────────────────────── -->
+            <section id="tab-add-category" class="tab-panel">
+                <h2 class="section-title" id="category-form-title">Add New Category</h2>
+                <form id="categoryForm" class="admin-form" onsubmit="handleCategorySubmit(event)">
+                    <input type="hidden" id="edit-category-id" value="">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cat-name">Slug Name *</label>
+                            <input type="text" id="cat-name" placeholder="e.g. phone-cases" required class="input">
+                            <span class="form-hint">URL-safe name (lowercase, hyphens)</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="cat-display">Display Name *</label>
+                            <input type="text" id="cat-display" placeholder="e.g. Phone Cases" required class="input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cat-folder">Image Folder *</label>
+                            <input type="text" id="cat-folder" placeholder="e.g. covers" required class="input">
+                        </div>
+                        <div class="form-group">
+                            <label for="cat-prefix">Image Prefix *</label>
+                            <input type="text" id="cat-prefix" placeholder="e.g. phonecover" required class="input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cat-ext">Image Extension</label>
+                            <input type="text" id="cat-ext" value=".jpg.jpeg" class="input">
+                        </div>
+                        <div class="form-group">
+                            <label for="cat-sort">Sort Order</label>
+                            <input type="number" id="cat-sort" placeholder="0" min="0" class="input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="cat-device-option">
+                                <span class="checkmark"></span>
+                                Has Device Option (Standard / Premium pricing)
+                            </label>
+                        </div>
+                    </div>
+                    <div id="device-fields" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cat-device-label">Premium Label</label>
+                                <input type="text" id="cat-device-label" value="iPhone / Samsung S series" class="input">
+                            </div>
+                            <div class="form-group">
+                                <label for="cat-device-extra">Premium Extra (₹)</label>
+                                <input type="number" id="cat-device-extra" value="50" min="0" class="input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="category-submit-btn">Add Category</button>
+                        <button type="button" class="btn btn-ghost" onclick="resetCategoryForm()">Cancel</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- ── Toast Notification ──────────────────────────────────────────── -->
+    <div id="admin-toast" class="admin-toast hidden"></div>
+
+    <!-- ── Confirm Dialog ──────────────────────────────────────────────── -->
+    <div id="confirm-dialog" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 class="modal-title" id="confirm-title">Are you sure?</h3>
+            <p class="modal-text" id="confirm-text"></p>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+                <button class="btn btn-danger" id="confirm-action-btn" onclick="">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credentials Modal -->
+    <div id="credentials-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2 class="modal-title">Change Security Details</h2>
+            <form id="credentials-form" onsubmit="event.preventDefault(); submitCredentials();">
+                <div class="form-group">
+                    <label>Current Password <span class="text-red-500">*</span></label>
+                    <input type="password" id="cred-current-pwd" required class="input">
+                </div>
+                <div class="form-group border-t border-pink-50 pt-4 mt-4">
+                    <label>New Username (Optional)</label>
+                    <input type="text" id="cred-new-user" class="input" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group">
+                    <label>New Password (Optional)</label>
+                    <input type="password" id="cred-new-pwd" class="input" placeholder="Leave blank to keep current">
+                </div>
+                <div class="modal-actions mt-6">
+                    <button type="button" class="btn btn-ghost" onclick="closeCredentialsModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="cred-save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API = window.location.origin;
+        const TOKEN = localStorage.getItem('adminToken');
+        let allProducts = [];
+        let allCategories = [];
+
+        // ── Auth Guard ───────────────────────────────────────────────────
+        if (!TOKEN) { window.location.href = '/admin/login.html'; }
+        fetch(`${API}/api/admin/me`, {
+            headers: { 'Authorization': `Bearer ${TOKEN}` }
+        }).then(r => { if (!r.ok) { localStorage.removeItem('adminToken'); window.location.href = '/admin/login.html'; } });
+
+        function authHeaders() {
+            return { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' };
+        }
+        function authHeadersOnly() {
+            return { 'Authorization': `Bearer ${TOKEN}` };
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login.html';
+        }
+
+        // ── Tabs ─────────────────────────────────────────────────────────
+        function showTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            const btn = document.querySelector(`[data-tab="${name}"]`);
+            if (btn) btn.classList.add('active');
+            if (name === 'products') loadProducts();
+            if (name === 'categories') loadCategories();
+            if (name === 'dashboard') updateDashboard();
+        }
+
+        // ── Toast ────────────────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('admin-toast');
+            t.textContent = msg;
+            t.className = `admin-toast ${type}`;
+            setTimeout(() => t.classList.add('hidden'), 3000);
+        }
+
+        // ── Confirm Dialog ───────────────────────────────────────────────
+        let confirmCb = null;
+        function openConfirm(title, text, cb) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-text').textContent = text;
+            document.getElementById('confirm-dialog').classList.remove('hidden');
+            confirmCb = cb;
+            document.getElementById('confirm-action-btn').onclick = () => { 
+                const callback = confirmCb; 
+                closeConfirm(); 
+                if (callback) callback(); 
+            };
+        }
+        function closeConfirm() { document.getElementById('confirm-dialog').classList.add('hidden'); confirmCb = null; }
+
+        // ── Load Data ────────────────────────────────────────────────────
+        async function fetchCategories() {
+            const res = await fetch(`${API}/api/categories`);
+            allCategories = await res.json();
+            return allCategories;
+        }
+
+        async function fetchProducts() {
+            const catFilter = document.getElementById('filter-category')?.value;
+            let url = `${API}/api/products`;
+            if (catFilter) url += `?category_id=${catFilter}`;
+            const res = await fetch(url);
+            allProducts = await res.json();
+            return allProducts;
+        }
+
+        async function loadProducts() {
+            await fetchCategories();
+            populateCategorySelects();
+            await fetchProducts();
+            renderProductsTable();
+        }
+
+        async function loadCategories() {
+            await fetchCategories();
+            renderCategoriesGrid();
+        }
+
+        function populateCategorySelects() {
+            const filterSel = document.getElementById('filter-category');
+            const prodSel = document.getElementById('prod-category');
+            const currentFilter = filterSel?.value || '';
+            const currentProd = prodSel?.value || '';
+
+            // Filter select
+            if (filterSel) {
+                filterSel.innerHTML = '<option value="">All Categories</option>' +
+                    allCategories.map(c => `<option value="${c.id}">${c.display_name}</option>`).join('');
+                filterSel.value = currentFilter;
+            }
+            // Product form select
+            if (prodSel) {
+                prodSel.innerHTML = '<option value="">Select category</option>' +
+                    allCategories.map(c => `<option value="${c.id}">${c.display_name}</option>`).join('');
+                prodSel.value = currentProd;
+            }
+        }
+
+        // ── Render Products Table ────────────────────────────────────────
+        function renderProductsTable() {
+            const tbody = document.getElementById('products-table-body');
+            if (allProducts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="table-empty">No products found. Add your first product!</td></tr>';
+                return;
+            }
+            tbody.innerHTML = allProducts.map(p => `
+                <tr>
+                    <td><div class="table-img"><img src="/${p.image_path}" onerror="this.src='https://placehold.co/60x60?text=🧶'" alt="${p.name}"></div></td>
+                    <td><strong>${p.name}</strong></td>
+                    <td class="price-cell">₹${p.price}</td>
+                    <td><span class="category-badge">${p.category_display_name || '—'}</span></td>
+                    <td>${p.has_size_option ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
+                    <td class="sort-cell">${p.sort_order}</td>
+                    <td class="actions-cell">
+                        <button onclick="editProduct(${p.id})" class="btn btn-sm btn-outline" title="Edit">✏️ Edit</button>
+                        <button onclick="confirmDeleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="btn btn-sm btn-outline-danger" title="Delete">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ── Render Categories Grid ───────────────────────────────────────
+        function renderCategoriesGrid() {
+            const grid = document.getElementById('categories-grid');
+            if (allCategories.length === 0) {
+                grid.innerHTML = '<div class="table-empty">No categories found.</div>';
+                return;
+            }
+            grid.innerHTML = allCategories.map(c => `
+                <div class="category-card">
+                    <div class="category-card-header">
+                        <h3 class="category-card-title">${c.display_name}</h3>
+                        <span class="category-card-slug">${c.name}</span>
+                    </div>
+                    <div class="category-card-body">
+                        <div class="category-detail"><span class="detail-label">Folder:</span> <span>${c.image_folder}</span></div>
+                        <div class="category-detail"><span class="detail-label">Prefix:</span> <span>${c.image_prefix}</span></div>
+                        <div class="category-detail"><span class="detail-label">Extension:</span> <span>${c.image_ext}</span></div>
+                        <div class="category-detail"><span class="detail-label">Device Option:</span> <span>${c.has_device_option ? '✅ Yes (+₹' + c.device_premium_extra + ')' : '❌ No'}</span></div>
+                        <div class="category-detail"><span class="detail-label">Sort Order:</span> <span>${c.sort_order}</span></div>
+                    </div>
+                    <div class="category-card-actions">
+                        <button onclick="editCategory(${c.id})" class="btn btn-sm btn-outline">✏️ Edit</button>
+                        <button onclick="confirmDeleteCategory(${c.id}, '${c.display_name.replace(/'/g, "\\'")}')" class="btn btn-sm btn-outline-danger">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ── Product CRUD ─────────────────────────────────────────────────
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-product-id').value;
+            const isEdit = editId !== '';
+
+            // If file was uploaded, upload it first
+            let imagePath = document.getElementById('prod-image').value;
+            const fileInput = document.getElementById('prod-file');
+            if (fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                const upRes = await fetch(`${API}/api/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${TOKEN}` },
+                    body: formData,
+                });
+                if (upRes.ok) {
+                    const upData = await upRes.json();
+                    imagePath = upData.path;
+                }
+            }
+
+            const body = {
+                name: document.getElementById('prod-name').value,
+                price: parseInt(document.getElementById('prod-price').value),
+                category_id: parseInt(document.getElementById('prod-category').value),
+                sort_order: parseInt(document.getElementById('prod-sort').value) || 0,
+                has_size_option: document.getElementById('prod-size-option').checked,
+            };
+            if (imagePath) body.image_path = imagePath;
+
+            const url = isEdit ? `${API}/api/products/${editId}` : `${API}/api/products`;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
+                if (!res.ok) { const d = await res.json(); throw new Error(d.detail || 'Failed'); }
+                showToast(isEdit ? 'Product updated!' : 'Product added!');
+                resetProductForm();
+                showTab('products');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        function editProduct(id) {
+            const p = allProducts.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('edit-product-id').value = p.id;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-category').value = p.category_id;
+            document.getElementById('prod-sort').value = p.sort_order;
+            document.getElementById('prod-image').value = p.image_path || '';
+            document.getElementById('prod-size-option').checked = p.has_size_option;
+            document.getElementById('product-form-title').textContent = 'Edit Product';
+            document.getElementById('product-submit-btn').textContent = 'Update Product';
+            showTab('add-product');
+        }
+
+        function resetProductForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('edit-product-id').value = '';
+            document.getElementById('product-form-title').textContent = 'Add New Product';
+            document.getElementById('product-submit-btn').textContent = 'Add Product';
+            document.getElementById('upload-preview').classList.add('hidden');
+            document.getElementById('upload-content').classList.remove('hidden');
+        }
+
+        function confirmDeleteProduct(id, name) {
+            openConfirm('Delete Product', `Are you sure you want to delete "${name}"? This cannot be undone.`, async () => {
+                try {
+                    const res = await fetch(`${API}/api/products/${id}`, {
+                        method: 'DELETE',
+                        headers: authHeadersOnly(),
+                    });
+                    if (res.status !== 204 && !res.ok) throw new Error('Failed to delete');
+                    showToast('Product deleted! 🗑️');
+                    await loadProducts();
+                } catch (err) {
+                    showToast(err.message, 'error');
+                }
+            });
+        }
+
+        // ── Category CRUD ────────────────────────────────────────────────
+        document.getElementById('cat-device-option').addEventListener('change', function() {
+            document.getElementById('device-fields').classList.toggle('hidden', !this.checked);
+        });
+
+        async function handleCategorySubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-category-id').value;
+            const isEdit = editId !== '';
+
+            const body = {
+                name: document.getElementById('cat-name').value,
+                display_name: document.getElementById('cat-display').value,
+                image_folder: document.getElementById('cat-folder').value,
+                image_prefix: document.getElementById('cat-prefix').value,
+                image_ext: document.getElementById('cat-ext').value,
+                sort_order: parseInt(document.getElementById('cat-sort').value) || 0,
+                has_device_option: document.getElementById('cat-device-option').checked,
+                device_premium_label: document.getElementById('cat-device-label').value,
+                device_premium_extra: parseInt(document.getElementById('cat-device-extra').value) || 50,
+            };
+
+            const url = isEdit ? `${API}/api/categories/${editId}` : `${API}/api/categories`;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
+                if (!res.ok) { const d = await res.json(); throw new Error(d.detail || 'Failed'); }
+                showToast(isEdit ? 'Category updated!' : 'Category added!');
+                resetCategoryForm();
+                showTab('categories');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        function editCategory(id) {
+            const c = allCategories.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('edit-category-id').value = c.id;
+            document.getElementById('cat-name').value = c.name;
+            document.getElementById('cat-display').value = c.display_name;
+            document.getElementById('cat-folder').value = c.image_folder;
+            document.getElementById('cat-prefix').value = c.image_prefix;
+            document.getElementById('cat-ext').value = c.image_ext;
+            document.getElementById('cat-sort').value = c.sort_order;
+            document.getElementById('cat-device-option').checked = c.has_device_option;
+            document.getElementById('cat-device-label').value = c.device_premium_label;
+            document.getElementById('cat-device-extra').value = c.device_premium_extra;
+            if (c.has_device_option) document.getElementById('device-fields').classList.remove('hidden');
+            document.getElementById('category-form-title').textContent = 'Edit Category';
+            document.getElementById('category-submit-btn').textContent = 'Update Category';
+            showTab('add-category');
+        }
+
+        function resetCategoryForm() {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('edit-category-id').value = '';
+            document.getElementById('category-form-title').textContent = 'Add New Category';
+            document.getElementById('category-submit-btn').textContent = 'Add Category';
+            document.getElementById('device-fields').classList.add('hidden');
+            document.getElementById('cat-ext').value = '.jpg.jpeg';
+            document.getElementById('cat-device-label').value = 'iPhone / Samsung S series';
+            document.getElementById('cat-device-extra').value = '50';
+        }
+
+        function confirmDeleteCategory(id, name) {
+            openConfirm('Delete Category', `Delete "${name}" and ALL its products? This cannot be undone.`, async () => {
+                try {
+                    const res = await fetch(`${API}/api/categories/${id}`, { method: 'DELETE', headers: authHeadersOnly() });
+                    if (res.status !== 204 && !res.ok) throw new Error('Failed to delete');
+                    showToast('Category deleted! 🗑️');
+                    await loadCategories();
+                } catch (err) {
+                    showToast(err.message, 'error');
+                }
+            });
+        }
+
+        // ── File Upload Preview ──────────────────────────────────────────
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                document.getElementById('upload-preview').src = ev.target.result;
+                document.getElementById('upload-preview').classList.remove('hidden');
+                document.getElementById('upload-content').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ── Dashboard Stats ──────────────────────────────────────────────
+        async function updateDashboard() {
+            await fetchCategories();
+            await fetchProducts();
+            document.getElementById('stat-products').textContent = allProducts.length;
+            document.getElementById('stat-categories').textContent = allCategories.length;
+            if (allProducts.length > 0) {
+                const avg = Math.round(allProducts.reduce((s, p) => s + p.price, 0) / allProducts.length);
+                const max = Math.max(...allProducts.map(p => p.price));
+                document.getElementById('stat-avg-price').textContent = `₹${avg}`;
+                document.getElementById('stat-highest').textContent = `₹${max}`;
+            }
+        }
+
+        // ── Security ─────────────────────────────────────────────────────
+        function openCredentialsModal() {
+            document.getElementById('credentials-modal').classList.remove('hidden');
+            document.getElementById('credentials-form').reset();
+        }
+        function closeCredentialsModal() {
+            document.getElementById('credentials-modal').classList.add('hidden');
+        }
+        async function submitCredentials() {
+            const current = document.getElementById('cred-current-pwd').value;
+            const newUser = document.getElementById('cred-new-user').value.trim();
+            const newPwd = document.getElementById('cred-new-pwd').value;
+
+            if(!newUser && !newPwd){
+                showToast('Nothing to update', 'error'); return;
+            }
+
+            document.getElementById('cred-save-btn').textContent = 'Saving...';
+            try {
+                const res = await fetch(`${API}/api/admin/credentials`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        current_password: current,
+                        new_username: newUser || null,
+                        new_password: newPwd || null
+                    })
+                });
+                
+                if(!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.detail || 'Validation failed');
+                }
+                
+                showToast('Credentials updated! Please login again.', 'success');
+                closeCredentialsModal();
+                setTimeout(() => logout(), 2000);
+            } catch(e) {
+                showToast(e.message, 'error');
+            } finally {
+                document.getElementById('cred-save-btn').textContent = 'Save Changes';
+            }
+        }
+
+        // ── Init ─────────────────────────────────────────────────────────
+        (async () => {
+            await fetchCategories();
+            populateCategorySelects();
+            updateDashboard();
+        })();
+    </script>
+</body>
+</html>
