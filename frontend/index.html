@@ -209,7 +209,19 @@
         }
 
         function initNavObserver() {
-            const obs = new IntersectionObserver((es) => { es.forEach(e => { if (e.isIntersecting) { document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); const navEl = document.getElementById('nav-' + e.target.id); if (navEl) navEl.classList.add('active'); } }); }, { root: document.querySelector('.snap-container'), threshold: 0.6 });
+            const obs = new IntersectionObserver((es) => {
+                es.forEach(e => {
+                    if (e.isIntersecting) {
+                        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                        const navEl = document.getElementById('nav-' + e.target.id);
+                        if (navEl) {
+                            navEl.classList.add('active');
+                            // Auto-scroll the nav bar to center the active button
+                            navEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        }
+                    }
+                });
+            }, { root: document.querySelector('.snap-container'), threshold: 0.6 });
             document.querySelectorAll('.snap-section').forEach(s => obs.observe(s));
         }
 
