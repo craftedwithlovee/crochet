@@ -97,11 +97,11 @@
         <div id="cart-footer" class="">
             <div class="mb-3">
                 <label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Customer Name</label>
-                <input type="text" id="cart-name" placeholder="Your full name" class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none shadow-inner h-10">
+                <input type="text" id="cart-name" oninput="saveCustomerDetails()" placeholder="Your full name" class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none shadow-inner h-10">
             </div>
             <div class="grid grid-cols-2 gap-3 mb-4">
-                <div><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Delivery Address</label><textarea id="cart-address" placeholder="Area, City..." class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none h-16 resize-none shadow-inner"></textarea></div>
-                <div><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Pincode</label><input type="number" id="cart-pincode" placeholder="6-digit" class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none shadow-inner h-16"></div>
+                <div><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Delivery Address</label><textarea id="cart-address" oninput="saveCustomerDetails()" placeholder="Area, City..." class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none h-16 resize-none shadow-inner"></textarea></div>
+                <div><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest block mb-1">Pincode</label><input type="number" id="cart-pincode" oninput="saveCustomerDetails()" placeholder="6-digit" class="w-full p-2 text-[10px] border border-pink-100 rounded-xl outline-none shadow-inner h-16"></div>
             </div>
             <div class="border-t border-pink-100 pt-4">
                 <div class="flex justify-between text-xs font-bold text-gray-500 mb-1 px-1"><span>Items Total:</span><span id="items-total">₹0</span></div>
@@ -299,6 +299,24 @@
         function updateCasePrice(id, b) { document.getElementById(`price-${id}`).innerText = `₹${document.getElementById(`type-${id}`).value === 'premium' ? Number(b) + 50 : b}`; }
         function updateAccessoryPrice(id, b) { document.getElementById(`price-${id}`).innerText = `₹${document.getElementById(`size-${id}`).value === 'premium' ? Number(b) + 20 : b}`; }
         
+        function saveCustomerDetails() {
+            const details = {
+                name: document.getElementById('cart-name').value,
+                address: document.getElementById('cart-address').value,
+                pincode: document.getElementById('cart-pincode').value
+            };
+            localStorage.setItem('crochetCustomer', JSON.stringify(details));
+        }
+
+        function loadCustomerDetails() {
+            const saved = JSON.parse(localStorage.getItem('crochetCustomer'));
+            if (saved) {
+                document.getElementById('cart-name').value = saved.name || "";
+                document.getElementById('cart-address').value = saved.address || "";
+                document.getElementById('cart-pincode').value = saved.pincode || "";
+            }
+        }
+
         function injectFooter(sid) { 
             document.getElementById('footer-' + sid).innerHTML = `<div class="mt-auto pt-24 pb-12 text-center px-4">
                 <p class="serif-heading text-xl md:text-4xl text-pink-800 leading-tight italic">Thank you for supporting us.<br>💞 Every order truly means the world to me 🧶</p>
@@ -311,6 +329,7 @@
         // Load store from API and initialize
         loadStore();
         updateCartUI();
+        loadCustomerDetails();
     </script>
 </body>
 </html>
