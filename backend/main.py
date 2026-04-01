@@ -140,7 +140,22 @@ app.mount("/images", StaticFiles(directory=str(PROJECT_ROOT / "frontend" / "imag
 app.mount("/admin", StaticFiles(directory=str(PROJECT_ROOT / "frontend" / "admin"), html=True), name="admin")
 
 
-# ── Storefront ───────────────────────────────────────────────────────────────
+# ── System ──────────────────────────────────────────────────────────────────
+
+@app.get("/api/system/seed", include_in_schema=False)
+async def manual_seed():
+    """Manual trigger to populate the database if auto-seed fails."""
+    try:
+        from .seed import seed
+        seed()
+        return {"status": "success", "message": "Database seeded or already exists."}
+    except Exception as e:
+        import traceback
+        return {
+            "status": "error", 
+            "error": str(e), 
+            "traceback": traceback.format_exc()
+        }
 
 @app.get("/", include_in_schema=False)
 async def serve_storefront():
