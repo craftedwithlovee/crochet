@@ -135,7 +135,7 @@
     <script>
         const SITE_URL = "https://craftedwithlovee.github.io/Crochets";
         const WHATSAPP_NUMBER = "918619703099";
-        const API_BASE = window.location.origin;
+        const API_BASE = "https://crochet-store-4dh6.onrender.com";
         let cart = JSON.parse(localStorage.getItem('crochetCart')) || [];
 
         function toggleCart() { const c = document.getElementById('cart-sidebar'); c.classList.toggle('open'); if(c.classList.contains('open')) history.pushState({ modal: 'cart' }, ''); }
