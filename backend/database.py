@@ -7,6 +7,10 @@ DATABASE_URL = os.getenv(
     "postgresql://postgres:postgres@localhost:5432/crochet_store"
 )
 
+# Fix for SQLAlchemy/Neon: postgres:// -> postgresql://
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 engine = create_engine(
     DATABASE_URL,
     echo=False,
