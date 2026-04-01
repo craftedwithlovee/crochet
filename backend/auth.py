@@ -17,13 +17,13 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", secrets.token_urlsafe(64))
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use pbkdf2_sha256 instead of bcrypt to avoid the "72 byte" bug on new Python versions
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 security = HTTPBearer()
 
 
 def hash_password(password: str) -> str:
-    # Fix for passlib bug in newer Python: truncate to 72 chars (bcrypt limit)
-    return pwd_context.hash(password[:72])
+    return pwd_context.hash(password)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
