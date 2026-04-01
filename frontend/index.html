@@ -192,6 +192,13 @@
                 const pid = `prod-${item.id}`;
                 const img = item.image_path || '';
                 const imgSrc = img.startsWith('http') ? img : `${API_BASE}/${img}`;
+                
+                // Device selector for categories with device option
+                let dv = cat.has_device_option ? `<div class="mt-2 text-left"><p class="text-pink-400 font-bold uppercase mb-1 text-[10px]">Device:</p><select id="type-${pid}" onchange="updateCasePrice('${pid}', ${item.price})" class="w-full p-1 text-[10px] border border-pink-50 rounded bg-pink-50/50 outline-none"><option value="standard">Standard (₹${item.price})</option><option value="premium">${cat.device_premium_label} (₹${item.price + cat.device_premium_extra})</option></select></div>` : '';
+
+                // Size selector for products with size option
+                let sz = item.has_size_option ? `<div class="mt-2 text-left"><p class="text-pink-400 font-bold uppercase mb-1 text-[9px]">Size:</p><select id="size-${pid}" onchange="updateAccessoryPrice('${pid}', ${item.price})" class="w-full p-1 text-[10px] border border-pink-50 rounded bg-pink-50/50 outline-none"><option value="standard">Small (₹${item.price})</option><option value="premium">Big (₹${item.price + (item.size_premium_extra || 20)})</option></select></div>` : '';
+
                 return `<div class="bg-white/80 p-3 rounded-2xl shadow-sm flex flex-col h-full border border-pink-100 backdrop-blur-sm group">
                     <div class="aspect-square bg-pink-50 rounded-xl mb-3 overflow-hidden cursor-zoom-in"><img src="${imgSrc}" loading="lazy" onclick="openModal('${imgSrc}')" class="w-full h-full object-cover transition transform group-hover:scale-105" onerror="this.src='https://placehold.co/400?text=${cat.display_name}'"></div>
                     <div class="flex-grow px-1 text-center"><h3 class="font-bold text-gray-800 text-[10px] md:text-sm mb-1 uppercase tracking-tighter">${sn}. ${item.name}</h3><p id="price-${pid}" class="text-pink-600 font-extrabold text-[11px] md:text-lg mb-2">₹${item.price}</p>${dv}${sz}<div class="mt-1 text-left"><p class="text-[7px] text-pink-400 font-bold italic mb-1 uppercase tracking-tighter">Customizations:</p><textarea id="note-${pid}" placeholder="models, color, design" class="w-full p-2 text-[9px] border border-pink-50 rounded bg-white outline-none h-10 shadow-inner resize-none"></textarea></div></div>
