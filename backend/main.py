@@ -125,14 +125,14 @@ async def upload_image(
 app.mount("/uploads", StaticFiles(directory=str(PROJECT_ROOT / "uploads")), name="uploads")
 
 # Serve existing product images
-app.mount("/images", StaticFiles(directory=str(PROJECT_ROOT / "images")), name="images")
+app.mount("/images", StaticFiles(directory=str(PROJECT_ROOT / "frontend" / "images")), name="images")
 
 # Serve admin panel
-app.mount("/admin", StaticFiles(directory=str(PROJECT_ROOT / "admin"), html=True), name="admin")
+app.mount("/admin", StaticFiles(directory=str(PROJECT_ROOT / "frontend" / "admin"), html=True), name="admin")
 
 
 # ── Storefront ───────────────────────────────────────────────────────────────
 
 @app.get("/", include_in_schema=False)
 async def serve_storefront():
-    return FileResponse(str(PROJECT_ROOT / "index.html"))
+    return FileResponse(str(PROJECT_ROOT / "frontend" / "index.html"))
