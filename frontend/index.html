@@ -190,6 +190,7 @@
             container.innerHTML = cat.products.map((item, i) => {
                 const sn = i + 1;
                 const pid = `prod-${item.id}`;
+                const img = item.image_path || '';
                 const imgSrc = img.startsWith('http') ? img : `${API_BASE}/${img}`;
                 return `<div class="bg-white/80 p-3 rounded-2xl shadow-sm flex flex-col h-full border border-pink-100 backdrop-blur-sm group">
                     <div class="aspect-square bg-pink-50 rounded-xl mb-3 overflow-hidden cursor-zoom-in"><img src="${imgSrc}" loading="lazy" onclick="openModal('${imgSrc}')" class="w-full h-full object-cover transition transform group-hover:scale-105" onerror="this.src='https://placehold.co/400?text=${cat.display_name}'"></div>
@@ -234,7 +235,7 @@
                 clearBtn.style.display = 'inline-block';
                 cartFooter.style.display = 'block';
                 cartItemsEl.innerHTML = cart.map((it, i) => `<div class="cart-item bg-pink-50 p-3 rounded-xl relative border border-pink-100 shadow-sm flex gap-3 items-center">
-                    <div class="w-14 h-14 bg-white rounded-lg overflow-hidden shrink-0 border border-pink-100 shadow-inner"><img src="${it.img.startsWith('http') ? it.img : API_BASE + '/' + it.img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=${it.category}'"></div>
+                    <div class="w-14 h-14 bg-white rounded-lg overflow-hidden shrink-0 border border-pink-100 shadow-inner"><img src="${(it.img && it.img.startsWith('http')) ? it.img : (it.img ? API_BASE + '/' + it.img : 'https://placehold.co/100?text=' + it.category)}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=${it.category}'"></div>
                     <div class="flex-grow pr-6">
                         <h4 class="font-bold text-pink-800 text-[10px] uppercase leading-tight">${it.sn}. ${it.name}</h4>
                         <p class="text-pink-600 font-extrabold text-sm mt-1">₹${it.price * it.qty} <span class="text-[9px] text-gray-400 font-semibold">(₹${it.price} × ${it.qty})</span></p>
