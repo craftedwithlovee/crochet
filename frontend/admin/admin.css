@@ -1428,10 +1428,6 @@ tbody tr:hover {
         --content-pad: 24px;
     }
 
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     .form-grid {
         grid-template-columns: 1fr;
     }
@@ -1471,14 +1467,6 @@ tbody tr:hover {
 }
 
 @media (max-width: 768px) {
-    :root {
-        --content-pad: 16px;
-    }
-
-    .desktop-only-section {
-        display: none !important;
-    }
-
     .header-row {
         padding: 14px var(--content-pad);
     }
@@ -1488,12 +1476,13 @@ tbody tr:hover {
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: 12px;
     }
 
     .stat-card {
-        padding: 20px;
+        padding: 14px 12px;
+        gap: 10px;
     }
 
     .stat-val {
