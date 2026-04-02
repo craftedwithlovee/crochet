@@ -1,581 +1,999 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Dashboard | Crafted with Love</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css?v=3.0">
+    <title>Crafted with Love | Admin Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
-    <!-- ── Header ──────────────────────────────────────────────────────── -->
-    <header class="admin-header">
-        <div class="header-left">
-            <span class="header-logo serif-heading">🧶 Crafted with Love</span>
-        </div>
-        <div class="header-actions">
-            <button onclick="openCredentialsModal()" class="btn btn-ghost" title="Security Settings">🔒 <span class="hide-mobile">Security</span></button>
-            <button onclick="logout()" class="btn btn-danger" title="Logout">🚪</button>
-        </div>
-    </header>
+
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
     <div class="admin-layout">
-        <!-- ── Desktop Sidebar ─────────────────────────────────────────── -->
-        <nav class="admin-sidebar">
-            <div style="margin-bottom: 20px; padding: 0 16px;"><p class="page-subtitle">Navigation</p></div>
-            <button class="sidebar-btn active" onclick="showTab('dashboard')" data-tab="dashboard">
-                <span class="sidebar-icon">📊</span> Dashboard
-            </button>
-            <button class="sidebar-btn" onclick="showTab('products')" data-tab="products">
-                <span class="sidebar-icon">🧸</span> Products
-            </button>
-            <button class="sidebar-btn" onclick="showTab('categories')" data-tab="categories">
-                <span class="sidebar-icon">📂</span> Categories
-            </button>
-            <button class="sidebar-btn" onclick="showTab('add-product')" data-tab="add-product">
-                <span class="sidebar-icon">➕</span> Add Product
-            </button>
-            <button class="sidebar-btn" onclick="showTab('add-category')" data-tab="add-category">
-                <span class="sidebar-icon">📁</span> Add Category
-            </button>
-            
-            <div style="margin-top: auto; padding: 16px; border-top: 1px solid var(--pink-100);">
-                <a href="/" class="btn btn-outline" style="width: 100%;" target="_blank">👁️ View Store</a>
+
+        <!-- ════ SIDEBAR ════ -->
+        <nav class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="brand-wrapper" onclick="showTab('dashboard'); return false;">
+                    <img src="/admin/assets/logo.png" alt="Crafted with Love" class="brand-logo-img" style="height: 42px; width: auto; border-radius: 8px; object-fit: contain;">
+                </a>
+                <button class="mobile-close" onclick="toggleSidebar(false)" aria-label="Close menu">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-nav">
+                <div class="nav-section">Main Menu</div>
+
+                <button class="sidebar-btn active" onclick="showTab('dashboard')" data-tab="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    Dashboard
+                </button>
+
+                <button class="sidebar-btn" onclick="showTab('products')" data-tab="products">
+                    <i data-lucide="sparkles"></i>
+                    Creations
+                </button>
+
+                <button class="sidebar-btn" onclick="showTab('categories')" data-tab="categories">
+                    <i data-lucide="folder-heart"></i>
+                    Collections
+                </button>
+
+                <button class="sidebar-btn" onclick="showTab('add-product')" data-tab="add-product">
+                    <i data-lucide="plus-circle"></i>
+                    New Design
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="/" class="btn-store-link" target="_blank" rel="noopener">
+                    <i data-lucide="external-link"></i>
+                    View Store
+                </a>
             </div>
         </nav>
 
-        <!-- ── Main Content ────────────────────────────────────────────── -->
+        <!-- ════ MAIN CONTENT ════ -->
         <main class="admin-content">
-            
-            <!-- Dashboard Tab -->
-            <section id="tab-dashboard" class="tab-panel active">
-                <div class="page-header">
-                    <div>
-                        <p class="page-subtitle">Overview</p>
-                        <h2 class="page-title serif-heading">Studio Insights</h2>
-                    </div>
-                </div>
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <span class="stat-icon">🧸</span>
-                        <div><span class="stat-val" id="stat-products">0</span><p class="stat-lbl">Products</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-icon">📂</span>
-                        <div><span class="stat-val" id="stat-categories">0</span><p class="stat-lbl">Categories</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-icon">📈</span>
-                        <div><span class="stat-val" id="stat-avg-price">₹0</span><p class="stat-lbl">Avg Price</p></div>
-                    </div>
-                </div>
-                
-                <div class="stat-card" style="max-width: 500px; cursor: pointer;" onclick="showTab('products')">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span style="font-size: 24px;">✨</span>
-                        <div><h4 style="font-weight: 800; color: var(--pink-700);">Ready to create?</h4><p style="font-size: 13px; color: var(--gray-400);">Switch to the inventory tab to manage your creations.</p></div>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Products Tab -->
-            <section id="tab-products" class="tab-panel">
-                <div class="page-header">
-                    <div>
-                        <p class="page-subtitle">Inventory</p>
-                        <h2 class="page-title serif-heading">Manage Products</h2>
-                    </div>
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <select id="filter-category" onchange="loadProducts()" class="input" style="width: 180px; padding: 8px 12px; font-size: 12px;">
-                            <option value="">All Categories</option>
-                        </select>
-                        <button onclick="showTab('add-product')" class="btn btn-primary">➕ New</button>
+            <!-- Header -->
+            <header class="header-row">
+                <div class="header-left">
+                    <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="greeting">
+                        <p class="overline">Crafted With Love ,</p>
+                        <h1 class="serif">Hello Artist</h1>
                     </div>
                 </div>
-                <div id="products-grid" class="grid-container">
-                    <!-- Cards will be injected here -->
-                </div>
-            </section>
 
-            <!-- Categories Tab -->
-            <section id="tab-categories" class="tab-panel">
-                <div class="page-header">
-                    <div>
-                        <p class="page-subtitle">Structure</p>
-                        <h2 class="page-title serif-heading">Categories</h2>
+                <div class="header-tools">
+                    <div class="action-menu">
+                        <div class="menu-trigger" onclick="toggleMenu(event)" role="button" tabindex="0">
+                            <div class="admin-avatar">A</div>
+                            <i data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="dropdown-content" id="action-dropdown">
+                            <div class="dropdown-item" onclick="openCredentialsModal()">
+                                <i data-lucide="shield-check"></i>
+                                Account &amp; Security
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item logout-link" onclick="logout()">
+                                <i data-lucide="log-out"></i>
+                                Sign Out
+                            </div>
+                        </div>
                     </div>
-                    <button onclick="showTab('add-category')" class="btn btn-primary">➕ New Category</button>
                 </div>
-                <div id="categories-grid" class="grid-container">
-                    <!-- Cards will be injected here -->
-                </div>
-            </section>
+            </header>
 
-            <!-- Add Product Tab -->
-            <section id="tab-add-product" class="tab-panel">
-                <div class="page-header">
-                    <div>
-                        <p class="page-subtitle">Creator</p>
-                        <h2 class="page-title serif-heading" id="product-form-title">Add New Product</h2>
-                    </div>
-                </div>
-                <div class="admin-form">
-                    <form id="productForm" onsubmit="handleProductSubmit(event)">
-                        <input type="hidden" id="edit-product-id">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Product Name</label>
-                                <input type="text" id="prod-name" required class="input" placeholder="e.g. Cherry Phone Case">
-                            </div>
-                            <div class="form-group">
-                                <label>Price (₹)</label>
-                                <input type="number" id="prod-price" required class="input" placeholder="e.g. 299">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Category</label>
-                                <select id="prod-category" required class="input"></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Sort Order</label>
-                                <input type="number" id="prod-sort" class="input" value="0">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Product Image</label>
-                            <div style="display: flex; gap: 15px; align-items: flex-start; flex-wrap: wrap;">
-                                <div id="upload-preview-container" style="display: none;">
-                                    <img id="upload-preview" src="" style="width: 100px; height: 100px; border-radius: 8px; object-fit: cover; border: 2px solid var(--pink-100);">
-                                </div>
-                                <div style="flex: 1; min-width: 200px;">
-                                    <input type="file" id="prod-file" accept="image/*" class="input" style="padding: 10px;">
-                                    <p class="form-hint">Upload a high-quality photo of your creation.</p>
-                                    <input type="hidden" id="prod-image">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label class="btn btn-outline" style="cursor: pointer; border-style: dashed; padding: 12px 24px; display: inline-flex;">
-                                <input type="checkbox" id="prod-size-option" style="width: 18px; height: 18px; margin-right: 10px; accent-color: var(--pink-500);">
-                                Allow size selection (Small/Big)
-                            </label>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-ghost" onclick="showTab('products')">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="product-submit-btn">Save Product</button>
-                        </div>
-                    </form>
-                </div>
-            </section>
+            <!-- Page Body -->
+            <div class="page-body">
 
-            <!-- Add Category Tab -->
-            <section id="tab-add-category" class="tab-panel">
-                <div class="page-header">
-                    <div>
-                        <p class="page-subtitle">Structure</p>
-                        <h2 class="page-title serif-heading" id="category-form-title">Add Category</h2>
+                <!-- ── DASHBOARD ── -->
+                <section id="tab-dashboard" class="tab-panel active">
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon-bg"><i data-lucide="package"></i></div>
+                            <div>
+                                <p class="stat-lbl">Live Inventory</p>
+                                <span class="stat-val serif" id="stat-products">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon-bg"><i data-lucide="layers"></i></div>
+                            <div>
+                                <p class="stat-lbl">Collections</p>
+                                <span class="stat-val serif" id="stat-categories">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon-bg"><i data-lucide="indian-rupee"></i></div>
+                            <div>
+                                <p class="stat-lbl">Avg. Value</p>
+                                <span class="stat-val serif" id="stat-avg-price">₹0</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="admin-form">
-                    <form id="categoryForm" onsubmit="handleCategorySubmit(event)">
-                        <input type="hidden" id="edit-category-id">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Internal Key</label>
-                                <input type="text" id="cat-name" required class="input" placeholder="e.g. phone-cases">
-                            </div>
-                            <div class="form-group">
-                                <label>Display Name</label>
-                                <input type="text" id="cat-display" required class="input" placeholder="e.g. Phone Cases">
-                            </div>
+
+                    <div class="desktop-only-section">
+                        <div class="section-header">
+                            <h2 class="serif"><i data-lucide="history"></i> Recent Additions</h2>
+                            <button class="text-link" onclick="showTab('products')">View All →</button>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Image Folder</label>
-                                <input type="text" id="cat-folder" required class="input" placeholder="e.g. cases">
-                            </div>
-                            <div class="form-group">
-                                <label>Prefix</label>
-                                <input type="text" id="cat-prefix" required class="input" placeholder="e.g. case-">
-                            </div>
+
+                        <div class="atelier-grid" id="dashboard-recent-grid">
+                            <!-- populated by JS -->
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Sort Order</label>
-                                <input type="number" id="cat-sort" class="input" value="0">
+                    </div>
+                </section>
+
+                <!-- ── PRODUCTS ── -->
+                <section id="tab-products" class="tab-panel">
+                    <div class="table-controls">
+                        <h2 class="serif">Studio Inventory</h2>
+                        <div class="filter-bar">
+                            <div class="search-input-wrapper">
+                                <i data-lucide="search"></i>
+                                <input type="text" id="product-search" placeholder="Search creations…"
+                                    class="input-field" oninput="filterProducts()">
                             </div>
-                            <div class="form-group">
-                                <label>Image Extension</label>
-                                <input type="text" id="cat-ext" required class="input" value=".jpg">
-                            </div>
+                            <select id="filter-category" onchange="loadProducts()" class="select-field"></select>
+                            <select id="sort-by" onchange="filterProducts()" class="select-field">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="name-asc">Name (A → Z)</option>
+                                <option value="name-desc">Name (Z → A)</option>
+                                <option value="price-asc">Price (Low → High)</option>
+                                <option value="price-desc">Price (High → Low)</option>
+                            </select>
+                            <button onclick="showTab('add-product')" class="btn btn-atelier">
+                                <i data-lucide="plus"></i> Add New
+                            </button>
                         </div>
-                        <div class="form-group">
-                            <label class="btn btn-outline" style="cursor: pointer; border-style: dashed; padding: 12px 24px; display: inline-flex;">
-                                <input type="checkbox" id="cat-device-option" style="width: 18px; height: 18px; margin-right: 10px; accent-color: var(--pink-500);">
-                                Has Phone Device selection?
-                            </label>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-scroll">
+                            <table class="responsive-table">
+                                <thead>
+                                    <tr>
+                                        <th>Preview</th>
+                                        <th>Creation Name</th>
+                                        <th>Collection</th>
+                                        <th>Value</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-table-body"></tbody>
+                            </table>
                         </div>
-                        <div id="device-fields" style="display: none; animation: slideDown 0.3s ease;">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Premium Label</label>
-                                    <input type="text" id="cat-device-label" class="input" placeholder="e.g. Custom Premium">
+                    </div>
+                </section>
+
+                <!-- ── CATEGORIES ── -->
+                <section id="tab-categories" class="tab-panel">
+                    <div class="table-controls">
+                        <h2 class="serif">Work Collections</h2>
+                        <button onclick="showTab('add-category')" class="btn btn-atelier">
+                            <i data-lucide="folder-plus"></i> New Collection
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-scroll">
+                            <table class="responsive-table">
+                                <thead>
+                                    <tr>
+                                        <th>Collection Name</th>
+                                        <th>Public Label</th>
+                                        <th>Type</th>
+                                        <th>Priority</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categories-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ── ADD / EDIT PRODUCT ── -->
+                <section id="tab-add-product" class="tab-panel">
+                    <div class="form-container">
+                        <h2 class="serif form-header" id="product-form-title">Publish New Design</h2>
+                        <form id="productForm" onsubmit="handleProductSubmit(event)" novalidate>
+                            <input type="hidden" id="edit-product-id">
+
+                            <div class="form-grid">
+                                <!-- Left: Image -->
+                                <div class="image-upload-area">
+                                    <label class="label-atelier">Creation Visual</label>
+                                    <div class="drop-zone" id="drop-zone">
+                                        <img id="upload-preview" src="" style="display:none;" alt="Preview">
+                                        <div id="upload-placeholder">
+                                            <i data-lucide="camera"></i>
+                                            <p>Click or drag photo here</p>
+                                        </div>
+                                        <input type="file" id="prod-file" accept="image/*" class="file-input">
+                                        <input type="hidden" id="prod-image">
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Extra Cost (₹)</label>
-                                    <input type="number" id="cat-device-extra" class="input" value="50">
+
+                                <!-- Right: Fields -->
+                                <div class="form-fields">
+                                    <div class="form-group">
+                                        <label class="label-atelier">Design Name</label>
+                                        <input type="text" id="prod-name" required class="input-atelier"
+                                            placeholder="Name your creation…">
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="label-atelier">Value (₹)</label>
+                                            <input type="number" id="prod-price" required min="0" class="input-atelier"
+                                                placeholder="0.00">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="label-atelier">Collection</label>
+                                            <select id="prod-category" required class="input-atelier-select"></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="checkbox-card">
+                                        <input type="checkbox" id="prod-size-option">
+                                        <label for="prod-size-option">Enable size selection for customers</label>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-ghost" onclick="showTab('products')">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-atelier" id="product-submit-btn">
+                                            <i data-lucide="sparkles"></i>
+                                            Publish to Store
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-ghost" onclick="showTab('categories')">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="category-submit-btn">Save Category</button>
-                        </div>
-                    </form>
-                </div>
-            </section>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- ── ADD / EDIT CATEGORY ── -->
+                <section id="tab-add-category" class="tab-panel">
+                    <div class="form-container">
+                        <h2 class="serif form-header" id="category-form-title">Create New Collection</h2>
+                        <form id="categoryForm" onsubmit="handleCategorySubmit(event)" novalidate>
+                            <input type="hidden" id="edit-category-id">
+
+                            <div class="form-fields">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="label-atelier">Internal Name</label>
+                                        <input type="text" id="cat-name" required class="input-atelier"
+                                            placeholder="e.g. crochet-bags">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-atelier">Display Name</label>
+                                        <input type="text" id="cat-display-name" required class="input-atelier"
+                                            placeholder="e.g. Crochet Bags">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="label-atelier">Image Folder</label>
+                                        <input type="text" id="cat-folder" required class="input-atelier"
+                                            placeholder="e.g. crochet-bags">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-atelier">Image Prefix</label>
+                                        <input type="text" id="cat-prefix" required class="input-atelier"
+                                            placeholder="e.g. bag">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="label-atelier">Image Extension</label>
+                                        <input type="text" id="cat-ext" class="input-atelier" value=".jpg">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-atelier">Sort Order</label>
+                                        <input type="number" id="cat-sort" class="input-atelier" value="0" min="0">
+                                    </div>
+                                </div>
+
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="cat-device-option">
+                                    <label for="cat-device-option">Enable device/model premium selection</label>
+                                </div>
+
+                                <div id="device-fields" style="display: none;">
+                                    <div class="form-row" style="margin-top: 12px;">
+                                        <div class="form-group">
+                                            <label class="label-atelier">Device Premium Label</label>
+                                            <input type="text" id="cat-device-label" class="input-atelier"
+                                                placeholder="e.g. iPhone / Samsung S series">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="label-atelier">Premium Extra (₹)</label>
+                                            <input type="number" id="cat-device-extra" class="input-atelier" value="50" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-ghost" onclick="resetCategoryForm(); showTab('categories')">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-atelier" id="category-submit-btn">
+                                        <i data-lucide="folder-plus"></i>
+                                        Save Collection
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+            </div><!-- /page-body -->
         </main>
-    </div>
+    </div><!-- /admin-layout -->
 
-    <!-- ── Mobile Bottom Nav ─────────────────────────────────────────── -->
-    <nav class="mobile-nav">
-        <button class="mobile-nav-btn active" onclick="showTab('dashboard')" data-tab="dashboard">
-            <span class="mobile-nav-icon">📊</span> Home
-        </button>
-        <button class="mobile-nav-btn" onclick="showTab('products')" data-tab="products">
-            <span class="mobile-nav-icon">🧸</span> Inventory
-        </button>
-        <button class="mobile-nav-btn" onclick="showTab('categories')" data-tab="categories">
-            <span class="mobile-nav-icon">📂</span> Groups
-        </button>
-        <button class="mobile-nav-btn" onclick="showTab('add-product')" data-tab="add-product">
-            <span class="mobile-nav-icon">➕</span> Add
-        </button>
-    </nav>
-
-    <!-- ── Centered Modals ──────────────────────────────────────────── -->
-    <!-- Security Modal -->
+    <!-- ════ CREDENTIALS MODAL ════ -->
     <div id="credentials-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 class="modal-title serif-heading">Security Settings</h2>
-            <p class="modal-body">Update your studio access keys below.</p>
-            <form id="credentials-form" onsubmit="event.preventDefault(); submitCredentials();" style="margin-top: 20px;">
-                <div class="form-group">
-                    <label style="font-size: 11px; font-weight: 800; color: var(--pink-600); text-transform: uppercase;">Current Access Key</label>
-                    <input type="password" id="cred-current-pwd" required class="input">
+        <div class="modal-content">
+            <h2 class="serif">Account &amp; Security</h2>
+            <p class="modal-subtitle">Update your login credentials securely.</p>
+            <form onsubmit="event.preventDefault(); submitCredentials();" novalidate>
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label class="label-atelier">Current Master Key</label>
+                    <input type="password" id="cred-current-pwd" required class="input-atelier"
+                        placeholder="Your current password">
                 </div>
-                <div class="form-row" style="margin-top: 15px; border-top: 1px solid var(--pink-50); padding-top: 15px;">
-                    <div class="form-group">
-                        <label>New Username</label>
-                        <input type="text" id="cred-new-user" class="input" placeholder="Keep current">
-                    </div>
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label class="label-atelier">New Username</label>
+                    <input type="text" id="cred-new-user" class="input-atelier"
+                        placeholder="Leave blank to keep current">
                 </div>
-                <div class="form-group">
-                    <label>New Access Key</label>
-                    <input type="password" id="cred-new-pwd" class="input" placeholder="Keep current">
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label class="label-atelier">New Master Key</label>
+                    <input type="password" id="cred-new-pwd" class="input-atelier"
+                        placeholder="Leave blank to keep current">
                 </div>
-                <div class="modal-actions">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="label-atelier">Confirm New Key</label>
+                    <input type="password" id="cred-confirm-pwd" class="input-atelier"
+                        placeholder="Repeat new password">
+                </div>
+                <div class="modal-btns">
                     <button type="button" class="btn btn-ghost" onclick="closeCredentialsModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="cred-save-btn">Update Keys</button>
+                    <button type="submit" class="btn btn-atelier">
+                        <i data-lucide="shield-check"></i>
+                        Update Access
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Confirm Dialog -->
+    <!-- ════ CONFIRM DIALOG ════ -->
     <div id="confirm-dialog" class="modal-overlay">
-        <div class="modal-card" style="max-width: 400px; text-align: center;">
-            <span id="confirm-icon" style="font-size: 48px; margin-bottom: 10px; display: block;">⚠️</span>
-            <h3 class="modal-title serif-heading" id="confirm-title" style="margin-bottom: 10px;">Are you sure?</h3>
-            <p class="modal-body" id="confirm-text"></p>
-            <div class="modal-actions" style="justify-content: center;">
+        <div class="modal-content confirm-box">
+            <div class="confirm-icon"><i data-lucide="alert-circle"></i></div>
+            <h3 class="serif" id="confirm-title">Are you sure?</h3>
+            <p id="confirm-text"></p>
+            <div class="modal-btns">
                 <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
-                <button class="btn btn-danger" id="confirm-action-btn" style="background: var(--pink-600); color: white;">Yes, Proceed</button>
+                <button class="btn btn-danger" id="confirm-action-btn">Delete</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Successfully updated!</div>
+    <!-- ════ TOAST CONTAINER ════ -->
+    <div class="toast-container" id="toast-container"></div>
 
+    <!-- ════ SCRIPTS ════ -->
     <script>
+        /* ── Config ── */
         const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
         const API = IS_LOCAL ? window.location.origin : "https://craftedwithlove.onrender.com";
         const TOKEN = localStorage.getItem('adminToken');
         let allProducts = [];
         let allCategories = [];
 
-        // ── Auth Guard ───────────────────────────────────────────────────
         if (!TOKEN) { window.location.href = '/admin/login.html'; }
-        fetch(`${API}/api/admin/me`, {
-            headers: { 'Authorization': `Bearer ${TOKEN}` }
-        }).then(r => { if (!r.ok) { localStorage.removeItem('adminToken'); window.location.href = '/admin/login.html'; } });
 
+        /* ── Auth ── */
         function authHeaders() { return { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' }; }
         function authHeadersOnly() { return { 'Authorization': `Bearer ${TOKEN}` }; }
-
         function logout() { localStorage.removeItem('adminToken'); window.location.href = '/admin/login.html'; }
 
-        // ── Tabs ─────────────────────────────────────────────────────────
+        /* ── Toast ── */
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const icon = type === 'success' ? 'check-circle' : 'alert-circle';
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i data-lucide="${icon}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => { toast.style.animation = 'none'; toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        /* ── Sidebar ── */
+        function toggleSidebar(state) {
+            const sb = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isActive = sb.classList.contains('active');
+            const open = (state === undefined) ? !isActive : state;
+
+            sb.classList.toggle('active', open);
+            overlay.classList.toggle('active', open);
+            document.body.style.overflow = open ? 'hidden' : '';
+        }
+
+        /* ── Dropdown ── */
+        function toggleMenu(e) {
+            e.stopPropagation();
+            document.getElementById('action-dropdown').classList.toggle('active');
+        }
+        window.onclick = () => document.getElementById('action-dropdown').classList.remove('active');
+
+        /* ── Tabs ── */
         function showTab(name) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
-            
+
             const panel = document.getElementById('tab-' + name);
             if (panel) panel.classList.add('active');
-            
             document.querySelectorAll(`[data-tab="${name}"]`).forEach(el => el.classList.add('active'));
-            
+
             if (name === 'products') loadProducts();
             if (name === 'categories') loadCategories();
             if (name === 'dashboard') updateDashboard();
-            
-            window.scrollTo(0, 0);
+            if (name === 'add-product') populateCategorySelects();
+
+            if (window.innerWidth < 1024) toggleSidebar(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (window.lucide) lucide.createIcons();
         }
 
-        // ── Modals ───────────────────────────────────────────────────────
+        /* ── Modals ── */
         function openCredentialsModal() { document.getElementById('credentials-modal').classList.add('active'); }
         function closeCredentialsModal() { document.getElementById('credentials-modal').classList.remove('active'); }
 
-        let confirmCb = null;
-        function openConfirm(title, text, cb, icon = '⚠️') {
+        let confirmCallback = null;
+        function openConfirm(title, text, cb) {
             document.getElementById('confirm-title').textContent = title;
             document.getElementById('confirm-text').textContent = text;
-            document.getElementById('confirm-icon').textContent = icon;
-            const modal = document.getElementById('confirm-dialog');
-            modal.classList.add('active');
-            confirmCb = cb;
-            document.getElementById('confirm-action-btn').onclick = () => { confirmCb(); closeConfirm(); };
+            confirmCallback = cb;
+            document.getElementById('confirm-dialog').classList.add('active');
+            document.getElementById('confirm-action-btn').onclick = () => { closeConfirm(); cb(); };
         }
         function closeConfirm() { document.getElementById('confirm-dialog').classList.remove('active'); }
 
-        // ── Data ─────────────────────────────────────────────────────────
-        async function fetchCategories() {
-            const res = await fetch(`${API}/api/categories`);
-            allCategories = await res.json();
-            return allCategories;
-        }
-        async function fetchProducts() {
-            const catFilter = document.getElementById('filter-category').value;
-            let url = `${API}/api/products`;
-            if (catFilter) url += `?category_id=${catFilter}`;
-            const res = await fetch(url);
-            allProducts = await res.json();
-            return allProducts;
-        }
+        /* ── Dashboard ── */
+        async function updateDashboard() {
+            try {
+                const [catRes, prodRes] = await Promise.all([
+                    fetch(`${API}/api/categories`),
+                    fetch(`${API}/api/products`)
+                ]);
+                allCategories = await catRes.json();
+                allProducts = await prodRes.json();
 
-        async function loadProducts() {
-            await fetchCategories();
-            populateCategorySelects();
-            await fetchProducts();
-            renderProductsGrid();
-        }
+                document.getElementById('stat-products').textContent = allProducts.length;
+                document.getElementById('stat-categories').textContent = allCategories.length;
 
-        async function loadCategories() {
-            await fetchCategories();
-            renderCategoriesGrid();
-        }
+                const avg = allProducts.length
+                    ? Math.round(allProducts.reduce((acc, p) => acc + p.price, 0) / allProducts.length)
+                    : 0;
+                document.getElementById('stat-avg-price').textContent = `₹${avg}`;
 
-        function populateCategorySelects() {
-            const f = document.getElementById('filter-category');
-            const p = document.getElementById('prod-category');
-            const curF = f.value; const curP = p.value;
-            const html = allCategories.map(c => `<option value="${c.id}">${c.display_name}</option>`).join('');
-            f.innerHTML = '<option value="">All Categories</option>' + html;
-            p.innerHTML = '<option value="">Select category</option>' + html;
-            f.value = curF; p.value = curP;
-        }
+                const recent = [...allProducts].reverse().slice(0, 4);
+                const grid = document.getElementById('dashboard-recent-grid');
 
-        // ── Rendering ────────────────────────────────────────────────────
-        function renderProductsGrid() {
-            const grid = document.getElementById('products-grid');
-            if (allProducts.length === 0) { grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-400);">No products found in this studio section.</div>'; return; }
-            grid.innerHTML = allProducts.map(p => `
-                <div class="item-card">
-                    <div class="item-img">
-                        <img src="${p.image_path.startsWith('http') ? p.image_path : API+'/'+p.image_path}" onerror="this.src='https://placehold.co/400x300?text=🧶'">
-                        <span class="item-price-tag">₹${p.price}</span>
-                    </div>
-                    <div class="item-body">
-                        <h4 class="item-title">${p.name}</h4>
-                        <div class="item-meta">
-                            <span class="pill pill-cat">${p.category_display_name || 'Uncategorized'}</span>
-                            <span class="pill pill-info">Order: ${p.sort_order}</span>
-                            ${p.has_size_option ? '<span class="pill" style="background:#fdf4ff; color:#a21caf;">📏 Sizable</span>' : ''}
-                        </div>
-                    </div>
-                    <div class="item-footer">
-                        <button onclick="editProduct(${p.id})" class="btn btn-outline" style="flex: 1; padding: 8px;">✏️ Edit</button>
-                        <button onclick="confirmDeleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="btn btn-danger" style="width: 44px; padding: 0;">🗑️</button>
-                    </div>
+                if (recent.length === 0) {
+                    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i data-lucide="package-open"></i><p>No creations yet. Add your first design!</p></div>`;
+                } else {
+                    grid.innerHTML = recent.map(p => `
+            <div class="creation-card">
+              <img src="${p.image_path.startsWith('http') ? p.image_path : API + '/' + p.image_path}"
+                   class="card-img" alt="${p.name}" loading="lazy">
+              <div class="card-body">
+                <h3>${p.name}</h3>
+                <div class="card-footer">
+                  <span class="price">₹${p.price}</span>
+                  <div class="card-actions">
+                    <button onclick="editProduct(${p.id})" title="Edit">
+                      <i data-lucide="edit-3"></i>
+                    </button>
+                  </div>
                 </div>
-            `).join('');
-        }
-
-        function renderCategoriesGrid() {
-            const grid = document.getElementById('categories-grid');
-            grid.innerHTML = allCategories.map(c => `
-                <div class="item-card" style="border-top: 4px solid var(--pink-400);">
-                    <div class="item-body">
-                        <h4 class="item-title serif-heading" style="font-size: 22px;">${c.display_name}</h4>
-                        <p style="font-size: 11px; color: var(--gray-400); margin-bottom: 15px;">KEY: ${c.name}</p>
-                        <div style="font-size: 13px; font-weight: 600; display: grid; gap: 6px;">
-                            <div style="display: flex; justify-content: space-between;"><span>Folder:</span><span style="color:var(--pink-600)">${c.image_folder}</span></div>
-                            <div style="display: flex; justify-content: space-between;"><span>Device Opt:</span><span>${c.has_device_option ? '✅ (₹'+c.device_premium_extra+')' : '❌'}</span></div>
-                        </div>
-                    </div>
-                    <div class="item-footer">
-                        <button onclick="editCategory(${c.id})" class="btn btn-outline" style="flex: 1;">Edit Category</button>
-                        <button onclick="confirmDeleteCategory(${c.id}, '${c.display_name.replace(/'/g, "\\'")}')" class="btn btn-danger" style="width: 44px; padding: 0;">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ── Product Operations ──────────────────────────────────────────
-        async function handleProductSubmit(e) {
-            e.preventDefault();
-            const editId = document.getElementById('edit-product-id').value;
-            const isEdit = editId !== '';
-            let imagePath = document.getElementById('prod-image').value;
-            const fileInput = document.getElementById('prod-file');
-            
-            if (fileInput.files.length > 0) {
-                const formData = new FormData();
-                formData.append('file', fileInput.files[0]);
-                try {
-                    const upRes = await fetch(`${API}/api/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${TOKEN}` }, body: formData });
-                    const upData = await upRes.json();
-                    if (upRes.ok) imagePath = upData.path;
-                } catch(e) {}
+              </div>
+            </div>
+          `).join('');
+                }
+                lucide.createIcons();
+            } catch (err) {
+                console.error('Dashboard error:', err);
             }
+        }
 
-            const body = {
-                name: document.getElementById('prod-name').value,
-                price: parseInt(document.getElementById('prod-price').value),
-                category_id: parseInt(document.getElementById('prod-category').value),
-                sort_order: parseInt(document.getElementById('prod-sort').value) || 0,
-                has_size_option: document.getElementById('prod-size-option').checked,
-            };
-            if (imagePath) body.image_path = imagePath;
+        /* ── Products ── */
+        async function loadProducts() {
+            const categoryId = document.getElementById('filter-category')?.value;
+            const url = categoryId ? `${API}/api/products?category_id=${categoryId}` : `${API}/api/products`;
 
             try {
-                const res = await fetch(isEdit ? `${API}/api/products/${editId}` : `${API}/api/products`, {
-                    method: isEdit ? 'PUT' : 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify(body)
-                });
-                if (!res.ok) throw new Error('Action failed');
-                showToast(isEdit ? 'Creation updated!' : 'New creation added!');
-                resetProductForm();
-                showTab('products');
-            } catch (err) { showToast('Operation failed', 'error'); }
+                const res = await fetch(url, { headers: authHeadersOnly() });
+                allProducts = await res.json();
+
+                // Populate filter dropdown once
+                const sel = document.getElementById('filter-category');
+                if (sel && sel.options.length <= 1) {
+                    sel.innerHTML = '<option value="">All Collections</option>' +
+                        allCategories.map(c => `<option value="${c.id}">${c.display_name || c.name}</option>`).join('');
+                }
+
+                filterProducts();
+            } catch (err) {
+                console.error('Load products error:', err);
+            }
         }
 
-        function editProduct(id) {
-            const p = allProducts.find(x => x.id === id); if (!p) return;
+        function filterProducts() {
+            const q = (document.getElementById('product-search')?.value || '').toLowerCase();
+            const sortBy = document.getElementById('sort-by')?.value || 'newest';
+            const tbody = document.getElementById('products-table-body');
+
+            let filtered = allProducts.filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                (p.category_name && p.category_name.toLowerCase().includes(q))
+            );
+
+            // Apply sorting
+            switch (sortBy) {
+                case 'newest':
+                    filtered.sort((a, b) => (new Date(b.created_at || 0) - new Date(a.created_at || 0)) || (b.id - a.id));
+                    break;
+                case 'oldest':
+                    filtered.sort((a, b) => (new Date(a.created_at || 0) - new Date(b.created_at || 0)) || (a.id - b.id));
+                    break;
+                case 'name-asc':
+                    filtered.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name-desc':
+                    filtered.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+                case 'price-asc':
+                    filtered.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-desc':
+                    filtered.sort((a, b) => b.price - a.price);
+                    break;
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--warm-400);">
+          <i data-lucide="search-x" style="width:32px;height:32px;display:block;margin:0 auto 10px;color:var(--warm-200);"></i>
+          No creations found.
+        </td></tr>`;
+                lucide.createIcons();
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => `
+        <tr>
+          <td data-label="Preview">
+            <img src="${p.image_path.startsWith('http') ? p.image_path : API + '/' + p.image_path}"
+                 class="tbl-thumb" alt="${p.name}" loading="lazy">
+          </td>
+          <td data-label="Name" style="font-weight:600; color:var(--text-primary);">${p.name}</td>
+          <td data-label="Collection">
+            <span class="cat-badge">${p.category_name || '—'}</span>
+          </td>
+          <td data-label="Value" style="font-weight:700; color:var(--rose);">₹${p.price}</td>
+          <td data-label="Actions">
+            <div class="tbl-actions">
+              <button class="btn-icon edit" onclick="editProduct(${p.id})" title="Edit">
+                <i data-lucide="edit-3"></i>
+              </button>
+              <button class="btn-icon del" onclick="confirmDeleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}' )" title="Delete">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+            lucide.createIcons();
+        }
+
+        async function editProduct(id) {
+            const p = allProducts.find(x => x.id === id);
+            if (!p) return;
+
             document.getElementById('edit-product-id').value = p.id;
             document.getElementById('prod-name').value = p.name;
             document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-image').value = p.image_path;
+            document.getElementById('prod-size-option').checked = p.has_size_option || false;
+
+            const preview = document.getElementById('upload-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            const imgSrc = p.image_path.startsWith('http') ? p.image_path : API + '/' + p.image_path;
+            preview.src = imgSrc;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+
+            await populateCategorySelects();
             document.getElementById('prod-category').value = p.category_id;
-            document.getElementById('prod-sort').value = p.sort_order;
-            document.getElementById('prod-image').value = p.image_path || '';
-            document.getElementById('prod-size-option').checked = p.has_size_option;
-            document.getElementById('product-form-title').textContent = 'Refine Creation';
-            document.getElementById('product-submit-btn').textContent = 'Update Creation';
+            document.getElementById('product-form-title').textContent = 'Edit Design';
+            document.getElementById('product-submit-btn').innerHTML = '<i data-lucide="save"></i> Save Changes';
             showTab('add-product');
+            lucide.createIcons();
+        }
+
+        function confirmDeleteProduct(id, name) {
+            openConfirm(
+                'Delete Creation?',
+                `"${name}" will be permanently removed from your store.`,
+                () => deleteProduct(id)
+            );
+        }
+
+        async function deleteProduct(id) {
+            try {
+                await fetch(`${API}/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
+                showToast('Creation removed successfully.');
+                loadProducts();
+                updateDashboard();
+            } catch (err) {
+                showToast('Failed to delete. Please try again.', 'error');
+            }
+        }
+
+        /* ── Product Form ── */
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('product-submit-btn');
+            const editId = document.getElementById('edit-product-id').value;
+
+            const payload = {
+                name: document.getElementById('prod-name').value,
+                price: parseFloat(document.getElementById('prod-price').value),
+                category_id: parseInt(document.getElementById('prod-category').value),
+                image_path: document.getElementById('prod-image').value,
+                has_size_option: document.getElementById('prod-size-option').checked,
+            };
+
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-circle" style="animation:spin 1s linear infinite;"></i> Saving…';
+            lucide.createIcons();
+
+            try {
+                const file = document.getElementById('prod-file').files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    const uploadRes = await fetch(`${API}/api/upload`, { method: 'POST', headers: authHeadersOnly(), body: formData });
+                    const uploadData = await uploadRes.json();
+                    payload.image_path = uploadData.path || uploadData.url || uploadData.image_path;
+                }
+
+                const method = editId ? 'PUT' : 'POST';
+                const url = editId ? `${API}/api/products/${editId}` : `${API}/api/products`;
+
+                await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
+
+                showToast(editId ? 'Design updated!' : 'Design published to store!');
+                resetProductForm();
+                showTab('products');
+            } catch (err) {
+                showToast('Something went wrong. Please try again.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="sparkles"></i> Publish to Store';
+                lucide.createIcons();
+            }
         }
 
         function resetProductForm() {
             document.getElementById('productForm').reset();
             document.getElementById('edit-product-id').value = '';
-            document.getElementById('product-form-title').textContent = 'Add New Product';
-            document.getElementById('product-submit-btn').textContent = 'Save Product';
-            document.getElementById('upload-preview-container').style.display = 'none';
+            document.getElementById('prod-image').value = '';
+            document.getElementById('upload-preview').src = '';
+            document.getElementById('upload-preview').style.display = 'none';
+            document.getElementById('upload-placeholder').style.display = 'flex';
+            document.getElementById('product-form-title').textContent = 'Publish New Design';
+            document.getElementById('product-submit-btn').innerHTML = '<i data-lucide="sparkles"></i> Publish to Store';
+            lucide.createIcons();
         }
 
-        function confirmDeleteProduct(id, name) {
-            openConfirm('Depart Creation?', `Are you sure you want to remove "${name}" from your studio?`, async () => {
-                const res = await fetch(`${API}/api/products/${id}`, { method: 'DELETE', headers: authHeadersOnly() });
-                if (res.ok) { showToast('Product removed!'); loadProducts(); }
-            }, '🗑️');
+        /* ── Image Upload (drag & drop) ── */
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('prod-file');
+        const preview = document.getElementById('upload-preview');
+        const placeholder = document.getElementById('upload-placeholder');
+
+        fileInput.addEventListener('change', () => handleFileSelect(fileInput.files[0]));
+
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault(); dropZone.classList.remove('drag-over');
+            handleFileSelect(e.dataTransfer.files[0]);
+        });
+
+        function handleFileSelect(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                preview.src = ev.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
         }
 
-        // ── Category Operations ─────────────────────────────────────────
-        document.getElementById('cat-device-option').addEventListener('change', function() {
+        /* ── Categories ── */
+        async function loadCategories() {
+            try {
+                const res = await fetch(`${API}/api/categories`, { headers: authHeadersOnly() });
+                allCategories = await res.json();
+                renderCategories();
+            } catch (err) {
+                console.error('Load categories error:', err);
+            }
+        }
+
+        function renderCategories() {
+            const tbody = document.getElementById('categories-table-body');
+            if (allCategories.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--warm-400);">No collections yet. Create your first one!</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = allCategories.map(c => `
+        <tr>
+          <td data-label="Name" style="font-weight:600;color:var(--text-primary);">${c.name}</td>
+          <td data-label="Public Label"><span class="cat-badge">${c.display_name || c.name}</span></td>
+          <td data-label="Type">
+            <span class="cat-badge" style="background:${c.has_device_option ? '#f0fdf4' : 'var(--blush-light)'}; color:${c.has_device_option ? '#15803d' : 'var(--rose)'}; border-color:${c.has_device_option ? '#bbf7d0' : 'var(--blush)'}">
+              ${c.has_device_option ? 'Device Option' : 'Standard'}
+            </span>
+          </td>
+          <td data-label="Priority">${c.sort_order ?? 0}</td>
+          <td data-label="Actions">
+            <div class="tbl-actions">
+              <button class="btn-icon edit" onclick="editCategory(${c.id})" title="Edit">
+                <i data-lucide="edit-3"></i>
+              </button>
+              <button class="btn-icon del" onclick="confirmDeleteCategory(${c.id}, '${(c.display_name || c.name).replace(/'/g, "\\'")}'  )" title="Delete">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+            lucide.createIcons();
+        }
+
+        function confirmDeleteCategory(id, name) {
+            openConfirm(
+                'Delete Collection?',
+                `"${name}" and its associated items may be affected.`,
+                () => deleteCategory(id)
+            );
+        }
+
+        async function deleteCategory(id) {
+            try {
+                await fetch(`${API}/api/categories/${id}`, { method: 'DELETE', headers: authHeaders() });
+                showToast('Collection removed.');
+                loadCategories();
+                updateDashboard();
+            } catch (err) {
+                showToast('Failed to delete. Please try again.', 'error');
+            }
+        }
+
+        async function editCategory(id) {
+            const c = allCategories.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('edit-category-id').value = c.id;
+            document.getElementById('cat-name').value = c.name;
+            document.getElementById('cat-display-name').value = c.display_name || '';
+            document.getElementById('cat-folder').value = c.image_folder || '';
+            document.getElementById('cat-prefix').value = c.image_prefix || '';
+            document.getElementById('cat-ext').value = c.image_ext || '.jpg';
+            document.getElementById('cat-sort').value = c.sort_order || 0;
+            document.getElementById('cat-device-option').checked = c.has_device_option || false;
+            document.getElementById('cat-device-label').value = c.device_premium_label || '';
+            document.getElementById('cat-device-extra').value = c.device_premium_extra || 50;
+            document.getElementById('device-fields').style.display = c.has_device_option ? 'block' : 'none';
+            document.getElementById('category-form-title').textContent = 'Edit Collection';
+            document.getElementById('category-submit-btn').innerHTML = '<i data-lucide="save"></i> Update Collection';
+            showTab('add-category');
+            lucide.createIcons();
+        }
+
+        /* ── Category Form ── */
+        document.getElementById('cat-device-option').addEventListener('change', function () {
             document.getElementById('device-fields').style.display = this.checked ? 'block' : 'none';
         });
 
         async function handleCategorySubmit(e) {
             e.preventDefault();
+            const btn = document.getElementById('category-submit-btn');
             const editId = document.getElementById('edit-category-id').value;
-            const isEdit = editId !== '';
-            const body = {
+
+            const payload = {
                 name: document.getElementById('cat-name').value,
-                display_name: document.getElementById('cat-display').value,
+                display_name: document.getElementById('cat-display-name').value,
                 image_folder: document.getElementById('cat-folder').value,
                 image_prefix: document.getElementById('cat-prefix').value,
-                image_ext: document.getElementById('cat-ext').value,
+                image_ext: document.getElementById('cat-ext').value || '.jpg',
                 sort_order: parseInt(document.getElementById('cat-sort').value) || 0,
                 has_device_option: document.getElementById('cat-device-option').checked,
-                device_premium_label: document.getElementById('cat-device-label').value,
+                device_premium_label: document.getElementById('cat-device-label').value || 'iPhone / Samsung S series',
                 device_premium_extra: parseInt(document.getElementById('cat-device-extra').value) || 50,
             };
+
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-circle" style="animation:spin 1s linear infinite;"></i> Saving…';
+            lucide.createIcons();
+
             try {
-                const res = await fetch(isEdit ? `${API}/api/categories/${editId}` : `${API}/api/categories`, {
-                    method: isEdit ? 'PUT' : 'POST', headers: authHeaders(), body: JSON.stringify(body)
-                });
-                if (res.ok) { showToast(isEdit ? 'Category Refined!' : 'New Group Created!'); showTab('categories'); }
-            } catch(e) { showToast('Failed', 'error'); }
+                const method = editId ? 'PUT' : 'POST';
+                const url = editId ? `${API}/api/categories/${editId}` : `${API}/api/categories`;
+                const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
+
+                if (!res.ok) {
+                    const d = await res.json();
+                    throw new Error(d.detail || 'Failed to save collection');
+                }
+
+                showToast(editId ? 'Collection updated!' : 'New collection created!');
+                resetCategoryForm();
+                showTab('categories');
+                updateDashboard();
+            } catch (err) {
+                showToast(err.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="folder-plus"></i> Save Collection';
+                lucide.createIcons();
+            }
         }
 
-        function editCategory(id) {
-            const c = allCategories.find(x => x.id === id); if (!c) return;
-            document.getElementById('edit-category-id').value = c.id;
-            document.getElementById('cat-name').value = c.name;
-            document.getElementById('cat-display').value = c.display_name;
-            document.getElementById('cat-folder').value = c.image_folder;
-            document.getElementById('cat-prefix').value = c.image_prefix;
-            document.getElementById('cat-ext').value = c.image_ext;
-            document.getElementById('cat-sort').value = c.sort_order;
-            document.getElementById('cat-device-option').checked = c.has_device_option;
-            document.getElementById('cat-device-label').value = c.device_premium_label || '';
-            document.getElementById('cat-device-extra').value = c.device_premium_extra;
-            document.getElementById('device-fields').style.display = c.has_device_option ? 'block' : 'none';
-            document.getElementById('category-form-title').textContent = 'Refine Group';
-            showTab('add-category');
+        function resetCategoryForm() {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('edit-category-id').value = '';
+            document.getElementById('device-fields').style.display = 'none';
+            document.getElementById('cat-ext').value = '.jpg';
+            document.getElementById('cat-device-extra').value = '50';
+            document.getElementById('category-form-title').textContent = 'Create New Collection';
+            document.getElementById('category-submit-btn').innerHTML = '<i data-lucide="folder-plus"></i> Save Collection';
+            lucide.createIcons();
         }
 
-        // ── Security ───────────────────────────────────────────────────
+        /* ── Populate Category Selects ── */
+        async function populateCategorySelects() {
+            if (allCategories.length === 0) {
+                const res = await fetch(`${API}/api/categories`);
+                allCategories = await res.json();
+            }
+            const sel = document.getElementById('prod-category');
+            const current = sel?.value;
+            if (sel) {
+                sel.innerHTML = '<option value="">Select a collection…</option>' +
+                    allCategories.map(c => `<option value="${c.id}">${c.display_name || c.name}</option>`).join('');
+                if (current) sel.value = current;
+            }
+
+            // Also populate filter dropdown
+            const filterSel = document.getElementById('filter-category');
+            if (filterSel && filterSel.options.length <= 1) {
+                filterSel.innerHTML = '<option value="">All Collections</option>' +
+                    allCategories.map(c => `<option value="${c.id}">${c.display_name || c.name}</option>`).join('');
+            }
+        }
+
+        /* ── Credentials Update ── */
         async function submitCredentials() {
-            const body = { current_password: document.getElementById('cred-current-pwd').value };
+            const currentPwd = document.getElementById('cred-current-pwd').value;
             const newUser = document.getElementById('cred-new-user').value;
             const newPwd = document.getElementById('cred-new-pwd').value;
-            if (newUser) body.new_username = newUser;
-            if (newPwd) body.new_password = newPwd;
-            const res = await fetch(`${API}/api/admin/update-credentials`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(body) });
-            if (res.ok) { showToast('Security Keys Updated! ✨'); closeCredentialsModal(); } else { showToast('Update Failed', 'error'); }
+            const confirmPwd = document.getElementById('cred-confirm-pwd')?.value;
+
+            if (newPwd && newPwd !== confirmPwd) {
+                showToast('New passwords do not match.', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/api/admin/credentials`, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        current_password: currentPwd,
+                        new_username: newUser || undefined,
+                        new_password: newPwd || undefined,
+                    }),
+                });
+                if (!res.ok) {
+                    const d = await res.json();
+                    throw new Error(d.detail || 'Update failed');
+                }
+                showToast('Credentials updated successfully!');
+                closeCredentialsModal();
+                document.getElementById('cred-current-pwd').value = '';
+                document.getElementById('cred-new-user').value = '';
+                document.getElementById('cred-new-pwd').value = '';
+                if (document.getElementById('cred-confirm-pwd')) document.getElementById('cred-confirm-pwd').value = '';
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
         }
 
-        function showToast(msg, type = 'success') {
-            const t = document.getElementById('toast'); t.textContent = msg;
-            t.className = `toast active ${type === 'error' ? 'toast-error' : 'toast-success'}`;
-            setTimeout(() => t.classList.remove('active'), 3000);
+        /* ── Mobile Navigation ── */
+        function toggleSidebar(force) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (typeof force === 'boolean') {
+                if (force) {
+                    sidebar.classList.add('active');
+                    overlay.classList.add('active');
+                } else {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
+            } else {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
         }
 
-        async function updateDashboard() {
-            await fetchCategories(); await fetchProducts();
-            document.getElementById('stat-products').textContent = allProducts.length;
-            document.getElementById('stat-categories').textContent = allCategories.length;
-            const avg = allProducts.length ? Math.round(allProducts.reduce((a,b)=>a+b.price,0)/allProducts.length) : 0;
-            document.getElementById('stat-avg-price').textContent = '₹' + avg;
+        function toggleMenu(e) {
+            e.stopPropagation();
+            document.getElementById('action-dropdown').classList.toggle('active');
         }
 
-        // Init
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('action-dropdown');
+            const trigger = document.querySelector('.menu-trigger');
+            if (dropdown && dropdown.classList.contains('active')) {
+                if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            }
+        });
+
+        /* ── Init ── */
         updateDashboard();
+        lucide.createIcons();
     </script>
+
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </body>
+
 </html>

@@ -10,7 +10,7 @@ from ..auth import verify_password, hash_password, create_access_token, get_curr
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
 @router.post("/login", response_model=TokenResponse)
-@limiter.limit("5/5minute")
+# @limiter.limit("5/5minute")
 def login(request: Request, data: AdminLogin, db: Session = Depends(get_db)):
     admin = db.query(Admin).filter(Admin.username == data.username).first()
     if not admin or not verify_password(data.password, admin.password_hash):
